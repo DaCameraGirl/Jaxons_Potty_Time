@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Potty Quest">
+  <link rel="manifest" href="manifest.json">
+  <title>Jaxon's Potty Quest</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --grass:   #5E7C16;
+      --dirt:    #866043;
+      --sky:     #87CEEB;
+      --diamond: #4AF7E9;
+      --gold:    #FCBA03;
+      --creeper: #3A8A3E;
+      --danger:  #CC3300;
+      --dark:    #2C1810;
+      --stone:   #2D2D2D;
+      --panel:   #3A3A3A;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0; padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    body {
+      font-family: 'Press Start 2P', monospace;
+      background: var(--sky);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── SCREENS ── */
+    .screen {
+      display: none;
+      min-height: 100vh;
+      flex-direction: column;
+      align-items: center;
+    }
+    .screen.active { display: flex; }
+
+    /* ── TOP BAR ── */
+    .top-bar {
+      width: 100%;
+      background: var(--stone);
+      border-bottom: 4px solid #111;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .diamond-count {
+      color: var(--diamond);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .top-label { font-size: 9px; color: #666; }
+
+    /* ── TITLE ── */
+    .title-block {
+      text-align: center;
+      padding: 18px 16px 8px;
+    }
+    .title-block h1 {
+      color: var(--gold);
+      font-size: clamp(16px, 5vw, 22px);
+      line-height: 1.6;
+      text-shadow: 3px 3px 0 #7A5700;
+    }
+    .title-block p {
+      color: #fff;
+      font-size: 10px;
+      margin-top: 6px;
+      text-shadow: 2px 2px 0 #555;
+    }
+
+    /* ── CHARACTER ── */
+    .char-area {
+      padding: 6px;
+      text-align: center;
+    }
+    .char-emoji {
+      font-size: 72px;
+      display: inline-block;
+      animation: float 2s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-8px); }
+    }
+    @keyframes urgency {
+      0%,100% { transform: translateX(0) scale(1); }
+      25%      { transform: translateX(-5px) scale(1.05); }
+      75%      { transform: translateX(5px) scale(1.05); }
+    }
+
+    /* ── POTTY METER ── */
+    .meter-wrap {
+      width: 90%;
+      max-width: 400px;
+      background: var(--stone);
+      border: 4px solid #111;
+      padding: 12px;
+      margin: 8px auto;
+    }
+    .meter-label {
+      font-size: 9px;
+      color: #aaa;
+      margin-bottom: 8px;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+    .meter-track {
+      background: #111;
+      border: 2px solid #555;
+      height: 30px;
+      position: relative;
+      overflow: visible;
+    }
+    .meter-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #43A047 0%, #FCBA03 65%, #CC3300 100%);
+      transition: width 0.8s ease;
+      position: relative;
+    }
+    .meter-face {
+      position: absolute;
+      right: -14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 22px;
+      line-height: 1;
+    }
+    .meter-status {
+      text-align: center;
+      font-size: 9px;
+      margin-top: 10px;
+      color: #ccc;
+      line-height: 1.5;
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      font-family: 'Press Start 2P', monospace;
+      border: none;
+      cursor: pointer;
+      border-radius: 3px;
+      border-bottom: 6px solid rgba(0,0,0,0.4);
+      border-right: 3px solid rgba(0,0,0,0.2);
+      transition: transform 0.08s, border-bottom 0.08s;
+      -webkit-user-select: none;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn:active {
+      transform: translateY(4px);
+      border-bottom: 2px solid rgba(0,0,0,0.4);
+    }
+    .btn-emoji { font-size: 36px; line-height: 1; }
+
+    .btn-grid {
+      width: 90%;
+      max-width: 400px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 10px auto;
+    }
+
+    .btn-need {
+      background: var(--gold);
+      color: var(--dark);
+      padding: 20px 10px;
+      font-size: 11px;
+      line-height: 1.7;
+      text-align: center;
+    }
+    .btn-went {
+      background: var(--creeper);
+      color: #fff;
+      padding: 20px 10px;
+      font-size: 11px;
+      line-height: 1.7;
+      text-align: center;
+    }
+    .btn-bus {
+      width: 90%;
+      max-width: 400px;
+      margin: 6px auto 0;
+      background: #E65100;
+      color: #fff;
+      font-size: 13px;
+      padding: 20px;
+      flex-direction: row;
+      gap: 12px;
+    }
+    .btn-back {
+      font-size: 10px;
+      background: rgba(0,0,0,0.3);
+      color: #fff;
+      padding: 12px 18px;
+      border-bottom: 3px solid rgba(0,0,0,0.4);
+    }
+
+    /* ── FOOTER ── */
+    .spacer { flex: 1; }
+    .grass-stripe {
+      width: 100%;
+      height: 18px;
+      background: repeating-linear-gradient(90deg, #5E7C16 0 16px, #4A7A1E 16px 32px);
+      flex-shrink: 0;
+    }
+    .dirt-stripe {
+      width: 100%;
+      height: 18px;
+      background: repeating-linear-gradient(90deg, #866043 0 16px, #7A5035 16px 32px);
+      flex-shrink: 0;
+    }
+    .last-trip {
+      font-size: 9px;
+      color: #666;
+      text-align: center;
+      padding: 8px 10px;
+    }
+
+    /* ── ALERT OVERLAY ── */
+    #alertOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(180, 0, 0, 0.88);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    #alertOverlay.show { display: flex; }
+    .alert-icon { font-size: 90px; animation: urgency 0.4s infinite; }
+    .alert-title {
+      font-size: 22px;
+      color: #fff;
+      padding: 20px;
+      line-height: 1.8;
+      text-shadow: 3px 3px 0 rgba(0,0,0,0.6);
+      animation: pulse 0.5s infinite alternate;
+    }
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to   { transform: scale(1.06); }
+    }
+    .btn-alert {
+      background: var(--gold);
+      color: var(--dark);
+      font-size: 15px;
+      padding: 22px 36px;
+      margin-top: 10px;
+    }
+
+    /* ═══════════ NEED SCREEN ═══════════ */
+    #screen-need {
+      background: #0D47A1;
+    }
+    .need-icon {
+      font-size: 96px;
+      display: block;
+      text-align: center;
+      margin: 16px auto 4px;
+      animation: urgency 0.6s infinite;
+    }
+    .need-title {
+      font-size: clamp(15px, 4.5vw, 20px);
+      color: #fff;
+      text-align: center;
+      padding: 10px 20px;
+      line-height: 1.8;
+      text-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+    }
+    .steps-panel {
+      background: rgba(255,255,255,0.12);
+      margin: 14px 20px;
+      padding: 16px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #fff;
+      line-height: 1;
+      width: calc(100% - 40px);
+      max-width: 400px;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      font-size: 11px;
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num { font-size: 20px; flex-shrink: 0; }
+    .btn-done {
+      background: var(--creeper);
+      color: #fff;
+      width: 88%;
+      max-width: 400px;
+      font-size: 14px;
+      padding: 24px;
+      margin: 10px auto;
+    }
+
+    /* ═══════════ CELEBRATE SCREEN ═══════════ */
+    #screen-celebrate {
+      background: #111;
+    }
+    .celebrate-title {
+      font-size: clamp(16px, 5vw, 22px);
+      color: var(--diamond);
+      text-align: center;
+      padding: 24px 16px 10px;
+      line-height: 1.8;
+      text-shadow: 0 0 20px var(--diamond);
+      animation: pulse 0.5s infinite alternate;
+    }
+    .diamond-rain {
+      position: relative;
+      width: 100%;
+      height: 110px;
+      overflow: hidden;
+    }
+    .d-particle {
+      position: absolute;
+      animation: fall linear forwards;
+      opacity: 0;
+    }
+    @keyframes fall {
+      0%   { transform: translateY(-40px) rotate(0deg);   opacity: 1; }
+      100% { transform: translateY(120px) rotate(360deg); opacity: 0.4; }
+    }
+    .celebrate-body {
+      text-align: center;
+      padding: 10px 20px 0;
+      color: #fff;
+      font-size: 11px;
+      line-height: 2.2;
+    }
+    .big-total {
+      font-size: 32px;
+      color: var(--diamond);
+      text-shadow: 0 0 12px var(--diamond);
+    }
+    .total-label { font-size: 9px; color: #666; }
+    .trip-number {
+      font-size: 48px;
+      color: var(--gold);
+      text-shadow: 3px 3px 0 #7A5700;
+      margin-top: 8px;
+    }
+    .trip-label { font-size: 9px; color: #888; margin-top: 4px; }
+    .btn-continue {
+      background: var(--grass);
+      color: #fff;
+      font-size: 13px;
+      padding: 20px 36px;
+      margin: 24px auto;
+    }
+
+    /* ═══════════ BUS SCREENS ═══════════ */
+    #screen-bus, #screen-bus-go {
+      background: #B34700;
+    }
+    .bus-top {
+      padding: 28px 20px 8px;
+      text-align: center;
+    }
+    .bus-icon { font-size: 80px; display: block; margin: 0 auto 10px; }
+    .bus-title {
+      font-size: clamp(16px, 5vw, 20px);
+      color: #fff;
+      line-height: 1.8;
+      text-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+    }
+    .bus-msg {
+      background: rgba(0,0,0,0.25);
+      margin: 16px 20px;
+      padding: 18px;
+      font-size: 11px;
+      color: #fff;
+      line-height: 2.2;
+      width: calc(100% - 40px);
+      max-width: 400px;
+    }
+    .bus-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      width: 90%;
+      max-width: 400px;
+      margin: 4px auto;
+    }
+    .btn-yes {
+      background: var(--creeper);
+      color: #fff;
+      padding: 22px 10px;
+      font-size: 11px;
+      line-height: 1.8;
+    }
+    .btn-notyet {
+      background: var(--gold);
+      color: var(--dark);
+      padding: 22px 10px;
+      font-size: 11px;
+      line-height: 1.8;
+    }
+    .go-icon {
+      font-size: 96px;
+      display: block;
+      text-align: center;
+      margin: 30px auto 10px;
+      animation: float 1s ease-in-out infinite;
+    }
+    .go-title {
+      font-size: clamp(17px, 5vw, 22px);
+      color: #fff;
+      text-align: center;
+      padding: 10px 20px;
+      line-height: 1.8;
+      text-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+    }
+    .go-sub {
+      font-size: 10px;
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+      padding: 0 20px;
+      line-height: 2.2;
+      max-width: 360px;
+    }
+    .btn-tried {
+      background: var(--creeper);
+      color: #fff;
+      font-size: 14px;
+      padding: 24px 40px;
+      margin: 24px auto;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ ALERT OVERLAY ═══ -->
+<div id="alertOverlay">
+  <span class="alert-icon">🚨</span>
+  <div class="alert-title">POTTY TIME!<br>GO NOW! 🚽</div>
+  <button class="btn btn-alert" onclick="goNow()">OK — I'M GOING!</button>
+</div>
+
+<!-- ═══════════════════════ MAIN SCREEN ═══════════════════════ -->
+<div class="screen active" id="screen-main">
+
+  <div class="top-bar">
+    <div class="diamond-count">💎 <span id="diamondCount">0</span></div>
+    <span class="top-label">POTTY QUEST</span>
+    <div style="font-size:10px; color:var(--gold)">TODAY: <span id="todayCount">0</span></div>
+  </div>
+
+  <div class="title-block">
+    <h1>JAXON'S<br>POTTY QUEST</h1>
+    <p>Earn diamonds for every trip! 💎</p>
+  </div>
+
+  <div class="char-area">
+    <span class="char-emoji" id="mainChar">⛏️</span>
+  </div>
+
+  <div class="meter-wrap">
+    <div class="meter-label">⚡ POTTY METER ⚡</div>
+    <div class="meter-track">
+      <div class="meter-fill" id="meterFill">
+        <span class="meter-face" id="meterFace">😊</span>
+      </div>
+    </div>
+    <div class="meter-status" id="meterStatus">All good! You went recently.</div>
+  </div>
+
+  <div class="btn-grid">
+    <button class="btn btn-need" onclick="showScreen('need')">
+      <span class="btn-emoji">🚽</span>
+      I NEED<br>TO GO!
+    </button>
+    <button class="btn btn-went" onclick="markWent()">
+      <span class="btn-emoji">💎</span>
+      I WENT!<br>+DIAMOND!
+    </button>
+  </div>
+
+  <button class="btn btn-bus" onclick="showScreen('bus')">
+    <span style="font-size:26px">🚌</span>
+    BUS TIME CHECK!
+  </button>
+
+  <div class="last-trip" id="lastTripText">—</div>
+  <div class="spacer"></div>
+  <div class="grass-stripe"></div>
+  <div class="dirt-stripe"></div>
+</div>
+
+
+<!-- ═══════════════════════ NEED SCREEN ═══════════════════════ -->
+<div class="screen" id="screen-need">
+
+  <div class="top-bar">
+    <button class="btn btn-back" onclick="showScreen('main')">⬅ BACK</button>
+    <span class="top-label">GO NOW!</span>
+    <span style="width:72px"></span>
+  </div>
+
+  <span class="need-icon">🚽</span>
+  <div class="need-title">GO TO THE<br>BATHROOM NOW!</div>
+
+  <div class="steps-panel">
+    <div class="step">
+      <span class="step-num">1️⃣</span>Walk to the bathroom
+    </div>
+    <div class="step">
+      <span class="step-num">2️⃣</span>Pull down your pants
+    </div>
+    <div class="step">
+      <span class="step-num">3️⃣</span>Sit or stand at the toilet
+    </div>
+    <div class="step">
+      <span class="step-num">4️⃣</span>Pee or poop — take your time!
+    </div>
+    <div class="step">
+      <span class="step-num">5️⃣</span>Wipe and wash hands 🧼
+    </div>
+  </div>
+
+  <button class="btn btn-done" onclick="markWent()">
+    <span class="btn-emoji">✅</span>
+    ALL DONE! +DIAMOND!
+  </button>
+
+  <div class="spacer"></div>
+  <div class="grass-stripe"></div>
+  <div class="dirt-stripe"></div>
+</div>
+
+
+<!-- ═══════════════════════ CELEBRATE SCREEN ═══════════════════════ -->
+<div class="screen" id="screen-celebrate">
+
+  <div class="celebrate-title">ACHIEVEMENT<br>UNLOCKED! 🏆</div>
+
+  <div class="diamond-rain" id="diamondRain"></div>
+
+  <div class="celebrate-body">
+    <div style="font-size:48px; margin-bottom:4px">💎💎💎</div>
+    YOU USED THE<br>TOILET LIKE A PRO!<br><br>
+    <div class="trip-number">TRIP #<span id="celebTrip">1</span></div>
+    <div class="trip-label">TODAY</div>
+    <br>
+    <div class="big-total">💎 <span id="celebCount">0</span></div>
+    <div class="total-label" style="margin-top:6px">TOTAL DIAMONDS</div>
+    <div style="margin-top:14px; font-size:9px; color:#555; line-height:2.2">
+      Keep collecting diamonds<br>to build your Minecraft world!
+    </div>
+  </div>
+
+  <button class="btn btn-continue" onclick="showScreen('main')">
+    ▶ KEEP PLAYING
+  </button>
+</div>
+
+
+<!-- ═══════════════════════ BUS SCREEN ═══════════════════════ -->
+<div class="screen" id="screen-bus">
+
+  <div class="top-bar">
+    <button class="btn btn-back" onclick="showScreen('main')">⬅ BACK</button>
+    <span class="top-label">BUS TIME</span>
+    <span style="width:72px"></span>
+  </div>
+
+  <div class="bus-top">
+    <span class="bus-icon">🚌</span>
+    <div class="bus-title">BUS TIME!<br>STOP! ✋</div>
+  </div>
+
+  <div class="bus-msg">
+    Before you get on the bus...<br><br>
+    🚽 Did you TRY to pee?<br><br>
+    Even if you don't feel like you<br>
+    need to — TRY ANYWAY!<br>
+    It makes the ride home way easier.
+  </div>
+
+  <div class="bus-btns">
+    <button class="btn btn-yes" onclick="busYes()">
+      <span class="btn-emoji">✅</span>
+      YES!<br>I TRIED!
+    </button>
+    <button class="btn btn-notyet" onclick="showScreen('bus-go')">
+      <span class="btn-emoji">⏳</span>
+      NOT<br>YET...
+    </button>
+  </div>
+
+  <div class="spacer"></div>
+  <div class="grass-stripe"></div>
+  <div class="dirt-stripe"></div>
+</div>
+
+
+<!-- ═══════════════════════ BUS-GO SCREEN ═══════════════════════ -->
+<div class="screen" id="screen-bus-go">
+
+  <div class="top-bar">
+    <button class="btn btn-back" onclick="showScreen('bus')">⬅ BACK</button>
+    <span class="top-label">GO TRY!</span>
+    <span style="width:72px"></span>
+  </div>
+
+  <span class="go-icon">🏃</span>
+  <div class="go-title">GO TRY NOW!<br>WE'LL WAIT! 🚽</div>
+  <div class="go-sub">
+    Walk to the bathroom<br>and try to pee — even just a little!<br><br>
+    Come back when you're done.
+  </div>
+
+  <button class="btn btn-tried" onclick="busDidGo()">
+    <span class="btn-emoji">✅</span>
+    I TRIED!
+  </button>
+
+  <div class="spacer"></div>
+  <div class="grass-stripe"></div>
+  <div class="dirt-stripe"></div>
+</div>
+
+
+<script>
+  /* ── STATE ── */
+  let diamonds      = parseInt(localStorage.getItem('jaxon_diamonds')   || '0');
+  let lastPottyTime = parseInt(localStorage.getItem('jaxon_lastPotty')  || String(Date.now()));
+  let alertFired    = false;
+
+  const FILL_MS = 90 * 60 * 1000; // meter fills in 90 min
+
+  function todayKey() {
+    const d = new Date();
+    return `jaxon_today_${d.getFullYear()}_${d.getMonth()}_${d.getDate()}`;
+  }
+
+  function getTodayCount() {
+    return parseInt(localStorage.getItem(todayKey()) || '0');
+  }
+
+  function incrementTodayCount() {
+    const n = getTodayCount() + 1;
+    localStorage.setItem(todayKey(), String(n));
+    return n;
+  }
+
+  /* ── INIT ── */
+  function init() {
+    updateDisplay();
+    updateMeter();
+    setInterval(updateMeter, 15_000);
+    setInterval(updateLastTrip, 30_000);
+  }
+
+  function updateDisplay() {
+    const today = getTodayCount();
+    document.getElementById('diamondCount').textContent = diamonds;
+    document.getElementById('celebCount').textContent   = diamonds;
+    document.getElementById('todayCount').textContent   = today;
+    updateLastTrip();
+  }
+
+  function updateLastTrip() {
+    const mins = Math.floor((Date.now() - lastPottyTime) / 60_000);
+    const el   = document.getElementById('lastTripText');
+    if (mins < 1)        el.textContent = 'Last trip: just now! ✨';
+    else if (mins < 60)  el.textContent = `Last trip: ${mins} min ago`;
+    else {
+      const h = Math.floor(mins / 60);
+      el.textContent = `Last trip: ${h}h ${mins % 60}m ago`;
+    }
+  }
+
+  /* ── METER ── */
+  function updateMeter() {
+    const pct  = Math.min((Date.now() - lastPottyTime) / FILL_MS, 1);
+    const pct100 = Math.round(pct * 100);
+
+    document.getElementById('meterFill').style.width = pct100 + '%';
+
+    const face   = document.getElementById('meterFace');
+    const status = document.getElementById('meterStatus');
+    const char   = document.getElementById('mainChar');
+
+    if (pct < 0.30) {
+      face.textContent  = '😊';
+      status.textContent = 'All good! You went recently.';
+      char.textContent  = '⛏️';
+      char.style.animation = 'float 2s ease-in-out infinite';
+    } else if (pct < 0.60) {
+      face.textContent  = '😐';
+      status.textContent = 'Getting full... think about going soon!';
+      char.textContent  = '😐';
+      char.style.animation = 'float 2s ease-in-out infinite';
+    } else if (pct < 0.85) {
+      face.textContent  = '😬';
+      status.textContent = 'You should probably go now!';
+      char.textContent  = '😬';
+      char.style.animation = 'urgency 0.8s infinite';
+    } else {
+      face.textContent  = '🚨';
+      status.textContent = '⚠️ GO POTTY NOW! ⚠️';
+      char.textContent  = '🆘';
+      char.style.animation = 'urgency 0.4s infinite';
+
+      if (!alertFired) {
+        alertFired = true;
+        document.getElementById('alertOverlay').classList.add('show');
+      }
+    }
+  }
+
+  /* ── SCREENS ── */
+  function showScreen(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  /* ── MARK WENT ── */
+  function markWent() {
+    lastPottyTime = Date.now();
+    localStorage.setItem('jaxon_lastPotty', String(lastPottyTime));
+
+    diamonds++;
+    localStorage.setItem('jaxon_diamonds', String(diamonds));
+
+    const tripNum = incrementTodayCount();
+    document.getElementById('celebTrip').textContent = tripNum;
+
+    alertFired = false;
+    document.getElementById('alertOverlay').classList.remove('show');
+
+    updateDisplay();
+    updateMeter();
+    showScreen('celebrate');
+    spawnDiamonds();
+  }
+
+  /* ── ALERT GO ── */
+  function goNow() {
+    document.getElementById('alertOverlay').classList.remove('show');
+    showScreen('need');
+  }
+
+  /* ── BUS ACTIONS ── */
+  function busYes()    { markWent(); }
+  function busDidGo()  { markWent(); }
+
+  /* ── DIAMOND RAIN ── */
+  function spawnDiamonds() {
+    const rain = document.getElementById('diamondRain');
+    rain.innerHTML = '';
+    for (let i = 0; i < 22; i++) {
+      const d       = document.createElement('span');
+      d.className   = 'd-particle';
+      d.textContent = '💎';
+      d.style.left             = Math.random() * 93 + '%';
+      d.style.fontSize         = (18 + Math.random() * 22) + 'px';
+      d.style.animationDuration = (0.7 + Math.random() * 1.3) + 's';
+      d.style.animationDelay   = (Math.random() * 1.8) + 's';
+      rain.appendChild(d);
+    }
+  }
+
+  /* ── GO ── */
+  init();
+</script>
+</body>
+</html>

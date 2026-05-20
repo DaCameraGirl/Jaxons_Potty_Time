@@ -2,7 +2,7 @@
   "name": "Jaxon's Potty Quest",
   "short_name": "Potty Quest",
   "description": "Minecraft-themed potty training game for Jaxon",
-  "start_url": "/Jaxons_Potty_Time/",
+  "start_url": "https://dacameragirl.github.io/Jaxons_Potty_Time/",
   "display": "standalone",
   "background_color": "#87CEEB",
   "theme_color": "#2D2D2D",

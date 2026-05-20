@@ -5,1025 +5,1291 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Poop Lab">
+  <meta name="apple-mobile-web-app-title" content="Toilet Lab">
   <link rel="manifest" href="manifest.json">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;900;1000&display=swap" rel="stylesheet">
-  <title>Jaxon's Poop Lab</title>
+  <title>Jaxon's Toilet Lab</title>
   <style>
     :root {
-      --sky:     #d8f5ed;
-      --water:   #28c7b7;
-      --deep:    #164b45;
-      --navy:    #102c2f;
-      --aqua:    #4fe3d1;
-      --lime:    #28c76f;
-      --grass:   #2fbf71;
-      --dirt:    #7a5635;
-      --stone:   #8c9aa2;
-      --diamond: #68fff0;
-      --ruby:    #2bc5a6;
-      --coal:    #26313f;
-      --white:   #fffaf0;
-      --panel:   rgba(255,250,240,0.93);
-      --line:    rgba(22,75,69,0.2);
-      --shadow:  rgba(16,44,47,0.14);
-      --gold:    #e8a000;
-      --red:     #e03030;
+      --sky:    #d8f5ed; --water:  #28c7b7; --deep:  #164b45;
+      --navy:   #102c2f; --aqua:   #4fe3d1; --lime:  #28c76f;
+      --grass:  #2fbf71; --dirt:   #7a5635; --stone: #8c9aa2;
+      --diam:   #68fff0; --ruby:   #2bc5a6; --white: #fffaf0;
+      --panel:  rgba(255,250,240,.93); --line: rgba(22,75,69,.2);
+      --shadow: rgba(16,44,47,.14);
+      --gold:   #e8a000; --dkgold: #b36000;
+      --red:    #e03030; --dkred:  #a02020;
+      --pee:    #f5c800; --dkpee:  #b39200;
+      --poop:   #8B5E3C; --dkpoop: #5c3d28;
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0;
-        -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-
-    html { min-height: 100%; background: var(--sky); }
-
-    body {
-      min-height: 100vh;
-      color: var(--navy);
-      font-family: "Nunito", Verdana, sans-serif;
+    *{ box-sizing:border-box; margin:0; padding:0;
+       -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+    html{ min-height:100%; background:var(--sky); }
+    body{
+      min-height:100vh; color:var(--navy);
+      font-family:"Nunito",Verdana,sans-serif;
       background:
-        radial-gradient(circle at 14% 12%, rgba(255,255,255,.72), transparent 16rem),
-        radial-gradient(circle at 88% 16%, rgba(79,227,209,.26), transparent 22rem),
-        linear-gradient(145deg, #e8fff8 0%, #bceee4 48%, #eaf8ee 100%);
-      overflow-x: hidden;
+        radial-gradient(circle at 14% 12%,rgba(255,255,255,.72),transparent 16rem),
+        radial-gradient(circle at 88% 16%,rgba(79,227,209,.26),transparent 22rem),
+        linear-gradient(145deg,#e8fff8 0%,#bceee4 48%,#eaf8ee 100%);
+      overflow-x:hidden;
     }
-
-    /* ground strip */
-    body::before {
-      content: "";
-      position: fixed; left: 0; right: 0; bottom: 0; z-index: 1;
-      height: 120px; pointer-events: none;
-      background: linear-gradient(180deg, #32d978 0 20px, #9a6239 20px 100%);
-      box-shadow: 0 -6px 0 rgba(22,75,69,.18);
+    body::before{
+      content:""; position:fixed; left:0; right:0; bottom:0; z-index:1;
+      height:110px; pointer-events:none;
+      background:linear-gradient(180deg,#32d978 0 18px,#9a6239 18px 100%);
+      box-shadow:0 -5px 0 rgba(22,75,69,.18);
     }
-    body::after {
-      content: "";
-      position: fixed; left: 0; right: 0; bottom: 0; z-index: 1;
-      height: 120px; pointer-events: none;
+    body::after{
+      content:""; position:fixed; left:0; right:0; bottom:0; z-index:1;
+      height:110px; pointer-events:none;
       background:
-        linear-gradient(90deg,
-          transparent 0 6vw, rgba(82,48,28,.35) 6vw 12vw,
-          transparent 12vw 25vw, rgba(62,37,24,.3) 25vw 31vw,
-          transparent 31vw 43vw, rgba(82,48,28,.35) 43vw 49vw,
-          transparent 49vw 62vw, rgba(62,37,24,.3) 62vw 68vw,
-          transparent 68vw 81vw, rgba(82,48,28,.35) 81vw 87vw,
-          transparent 87vw),
-        linear-gradient(180deg,
-          transparent 0 20px, rgba(75,44,27,.26) 20px 50px, transparent 50px);
+        linear-gradient(90deg,transparent 0 6vw,rgba(82,48,28,.35) 6vw 12vw,transparent 12vw 25vw,
+          rgba(62,37,24,.3) 25vw 31vw,transparent 31vw 43vw,rgba(82,48,28,.35) 43vw 49vw,
+          transparent 49vw 62vw,rgba(62,37,24,.3) 62vw 68vw,transparent 68vw 81vw,
+          rgba(82,48,28,.35) 81vw 87vw,transparent 87vw),
+        linear-gradient(180deg,transparent 0 18px,rgba(75,44,27,.26) 18px 50px,transparent 50px);
     }
-
-    /* ── FLOATING VOXEL BLOCKS ── */
-    .block-world {
-      position: fixed; inset: 0; z-index: 1;
-      overflow: hidden; pointer-events: none;
-    }
-    .voxel {
-      position: absolute; width: 70px; height: 70px;
-      image-rendering: pixelated;
-      animation: vFloat 6s ease-in-out infinite;
-    }
-    @keyframes vFloat {
-      0%,100% { transform: translateY(0) rotate(var(--r,8deg)); }
-      50%      { transform: translateY(-14px) rotate(var(--r,8deg)); }
-    }
-    .v-grass {
-      background: linear-gradient(180deg,#43d47a 0 22px,#9a6239 22px);
-      border: 4px solid var(--deep); border-radius: 3px;
-    }
-    .v-diamond {
-      background: radial-gradient(circle at 24px 22px,#e9ffff 0 7px,transparent 8px),
-                  linear-gradient(180deg,#a9fff6,#28c7b7);
-      border: 4px solid var(--deep); border-radius: 3px;
-    }
-    .v-dirt {
-      background: radial-gradient(circle at 22px 20px,rgba(255,255,255,.15) 0 8px,transparent 9px),
-                  linear-gradient(180deg,#a86e40,#6f4328);
-      border: 4px solid var(--deep); border-radius: 3px;
-    }
-    .v-stone {
-      background: radial-gradient(circle at 20px 20px,rgba(255,255,255,.24) 0 9px,transparent 10px),
-                  linear-gradient(180deg,#c5d0db,#8292a2);
-      border: 4px solid var(--deep); border-radius: 3px;
-    }
-    .blk-a{ left:5vw;   top:14%; --r:8deg;  animation-delay:0s;    animation-duration:5.8s; }
-    .blk-b{ left:80vw;  top:8%;  --r:-6deg; animation-delay:1.2s;  animation-duration:7s;   }
-    .blk-c{ left:60vw;  top:22%; --r:12deg; animation-delay:0.6s;  animation-duration:5.2s; }
-    .blk-d{ left:22vw;  top:30%; --r:-9deg; animation-delay:2s;    animation-duration:6.4s; }
-    .blk-e{ left:42vw;  top:6%;  --r:5deg;  animation-delay:0.3s;  animation-duration:8s;   }
-
+    #bgCanvas{ position:fixed; inset:0; z-index:0; pointer-events:none; }
+    #cursorTrail{ position:fixed; inset:0; z-index:2; pointer-events:none; }
+    .block-world{ position:fixed; inset:0; z-index:1; overflow:hidden; pointer-events:none; }
+    .voxel{ position:absolute; width:64px; height:64px; image-rendering:pixelated; animation:vFloat 6s ease-in-out infinite; }
+    @keyframes vFloat{ 0%,100%{transform:translateY(0) rotate(var(--r,8deg))} 50%{transform:translateY(-12px) rotate(var(--r,8deg))} }
+    .v-grass{ background:linear-gradient(180deg,#43d47a 0 18px,#9a6239 18px); border:4px solid var(--deep); border-radius:3px; }
+    .v-diam{ background:radial-gradient(circle at 22px 20px,#e9ffff 0 6px,transparent 7px),linear-gradient(180deg,#a9fff6,#28c7b7); border:4px solid var(--deep); border-radius:3px; }
+    .v-dirt{ background:radial-gradient(circle at 20px 18px,rgba(255,255,255,.15) 0 7px,transparent 8px),linear-gradient(180deg,#a86e40,#6f4328); border:4px solid var(--deep); border-radius:3px; }
+    .blk-a{left:4vw;  top:10%; --r:8deg;  animation-delay:0s;   animation-duration:5.8s; }
+    .blk-b{left:80vw; top:6%;  --r:-6deg; animation-delay:1.4s; animation-duration:7s; }
+    .blk-c{left:55vw; top:20%; --r:12deg; animation-delay:0.7s; animation-duration:5.4s; }
+    .blk-d{left:20vw; top:28%; --r:-9deg; animation-delay:2.1s; animation-duration:6.6s; }
     /* ── SCREENS ── */
-    .screen { display:none; min-height:100vh; flex-direction:column; align-items:center;
-              position:relative; z-index:2; padding-bottom:130px; }
-    .screen.active { display:flex; }
-
-    /* ── TOP BAR ── */
-    .topbar {
-      width:100%; background:rgba(16,44,47,0.85);
-      backdrop-filter:blur(8px);
-      padding:12px 18px;
-      display:flex; justify-content:space-between; align-items:center;
-      flex-shrink:0; position:sticky; top:0; z-index:10;
+    .screen{ display:none; min-height:100vh; flex-direction:column; align-items:center; position:relative; z-index:3; padding-bottom:120px; }
+    .screen.active{ display:flex; }
+    /* ── TOPBAR ── */
+    .topbar{
+      width:100%; background:rgba(16,44,47,.88); backdrop-filter:blur(8px);
+      padding:11px 16px; display:flex; justify-content:space-between; align-items:center;
+      flex-shrink:0; position:sticky; top:0; z-index:10; gap:8px;
     }
-    .tb-gem   { color:var(--diamond); font-family:"Baloo 2"; font-size:14px; font-weight:800;
-                display:flex; gap:6px; align-items:center; }
-    .tb-title { color:var(--aqua); font-family:"Baloo 2"; font-size:12px; font-weight:800;
-                letter-spacing:.5px; }
-    .tb-today { color:var(--gold); font-family:"Baloo 2"; font-size:13px; font-weight:800;
-                display:flex; gap:6px; align-items:center; }
-    .btn-qr {
-      font-family:"Nunito"; font-size:11px; font-weight:900;
-      background:rgba(255,250,240,.15); color:var(--aqua);
-      border:2px solid var(--aqua); padding:5px 10px; cursor:pointer;
-      border-radius:4px; margin-left:8px;
-      transition:background .15s;
-    }
-    .btn-qr:hover { background:rgba(79,227,209,.2); }
-
+    .tb-gem{ color:var(--diam); font-family:"Baloo 2"; font-size:13px; font-weight:800; display:flex; gap:5px; align-items:center; }
+    .tb-mid{ color:var(--aqua); font-family:"Baloo 2"; font-size:11px; font-weight:800; letter-spacing:.4px; }
+    .tb-right{ display:flex; gap:6px; align-items:center; }
+    .tb-pill{ font-family:"Nunito"; font-size:10px; font-weight:900;
+              background:rgba(255,250,240,.12); color:var(--diam); border:1.5px solid rgba(79,227,209,.4);
+              padding:4px 9px; border-radius:20px; cursor:pointer; white-space:nowrap; }
+    .tb-pill:active{ background:rgba(79,227,209,.2); }
     /* ── BRAND ── */
-    .brand {
-      text-align:center; padding:20px 16px 8px; width:100%;
+    .brand{ text-align:center; padding:18px 16px 6px; width:100%; }
+    .eyebrow{ font-family:"Nunito"; font-size:10px; font-weight:700; color:var(--water); letter-spacing:2px; text-transform:uppercase; }
+    .brand h1{ font-family:"Baloo 2"; font-weight:800; line-height:1.1; color:var(--navy); }
+    .brand h1 span:first-child{ font-size:clamp(20px,5.5vw,28px); display:block; }
+    .brand h1 span:last-child{ font-size:clamp(24px,6.5vw,34px); display:block; color:var(--deep); }
+    .badge{ display:inline-block; margin-top:5px; background:var(--water); color:#fff;
+            font-family:"Nunito"; font-size:10px; font-weight:900; padding:3px 12px; border-radius:20px; }
+    /* ── PANELS ── */
+    .card{
+      width:92%; max-width:400px; background:var(--panel);
+      border:2.5px solid rgba(22,75,69,.18); border-radius:16px;
+      box-shadow:0 4px 18px var(--shadow); padding:16px 14px; margin:8px auto;
     }
-    .brand-eyebrow {
-      font-family:"Nunito"; font-size:11px; font-weight:700;
-      color:var(--water); letter-spacing:2px; text-transform:uppercase;
+    .card-title{ font-family:"Nunito"; font-size:10px; font-weight:700; color:var(--water); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; text-align:center; }
+    /* ── HERO STAT ── */
+    .hero-row{ display:flex; gap:10px; width:92%; max-width:400px; margin:8px auto; }
+    .hero-tile{
+      flex:1; background:var(--panel); border:2.5px solid rgba(22,75,69,.18);
+      border-radius:14px; box-shadow:0 3px 12px var(--shadow);
+      padding:14px 8px; text-align:center;
     }
-    .brand h1 {
-      font-family:"Baloo 2"; font-weight:800; line-height:1.1;
-      color:var(--navy);
+    .hero-n{ font-family:"Baloo 2"; font-weight:800; font-size:clamp(38px,10vw,52px); line-height:1; }
+    .hero-n.pee-col{ color:var(--pee); }
+    .hero-n.poop-col{ color:var(--poop); }
+    .hero-lbl{ font-family:"Nunito"; font-size:9px; font-weight:700; color:var(--stone); margin-top:3px; text-transform:uppercase; letter-spacing:.5px; }
+    /* ── MINI STATS ── */
+    .stat-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; width:92%; max-width:400px; margin:0 auto 8px; }
+    .stat-tile{ background:var(--panel); border:2px solid rgba(22,75,69,.14); border-radius:12px; box-shadow:0 2px 8px var(--shadow); padding:9px 4px; text-align:center; }
+    .stat-n{ font-family:"Baloo 2"; font-weight:800; font-size:clamp(20px,4.5vw,26px); color:var(--deep); line-height:1; }
+    .stat-n.gc{ color:var(--gold); } .stat-n.lc{ color:var(--lime); } .stat-n.tc{ color:var(--water); } .stat-n.dc{ color:var(--ruby); }
+    .stat-l{ font-family:"Nunito"; font-size:7px; font-weight:700; color:var(--stone); margin-top:3px; text-transform:uppercase; letter-spacing:.4px; line-height:1.3; }
+    /* ── COUNTDOWN BAND ── */
+    .countdown-band{
+      width:92%; max-width:400px; margin:0 auto 8px;
+      background:rgba(16,44,47,.7); border:2px solid rgba(79,227,209,.3);
+      border-radius:12px; padding:10px 16px;
+      display:flex; align-items:center; justify-content:space-between;
     }
-    .brand h1 span:first-child { font-size:clamp(22px,6vw,30px); display:block; }
-    .brand h1 span:last-child  {
-      font-size:clamp(26px,7vw,36px); display:block;
-      color:var(--deep);
-    }
-    .brand-badge {
-      display:inline-block; margin-top:6px;
-      background:var(--water); color:#fff;
-      font-family:"Nunito"; font-size:11px; font-weight:900;
-      padding:4px 14px; border-radius:20px; letter-spacing:.5px;
-    }
-
-    /* ── HERO NUMBER ── */
-    .hero-panel {
-      width:92%; max-width:380px;
-      background:var(--panel);
-      border:2.5px solid rgba(22,75,69,.2);
-      border-radius:16px;
-      box-shadow:0 4px 20px var(--shadow);
-      padding:20px 16px 16px;
-      margin:12px auto 8px;
-      text-align:center;
-    }
-    .hero-label {
-      font-family:"Nunito"; font-size:11px; font-weight:700;
-      color:var(--water); letter-spacing:2px; text-transform:uppercase;
-      margin-bottom:4px;
-    }
-    .hero-number {
-      font-family:"Baloo 2"; font-weight:800;
-      font-size:clamp(72px,20vw,100px);
-      color:var(--deep); line-height:1;
-      transition:color .4s;
-    }
-    .hero-number.warn  { color:var(--gold); }
-    .hero-number.alert { color:var(--red); animation:pulse .5s infinite alternate; }
-    @keyframes pulse { from{transform:scale(1)} to{transform:scale(1.05)} }
-    .hero-sub {
-      font-family:"Nunito"; font-size:13px; font-weight:700;
-      color:var(--stone); margin-top:4px;
-      transition:color .4s;
-    }
-    .hero-sub.warn  { color:var(--gold); }
-    .hero-sub.alert { color:var(--red); font-weight:900; }
-
-    /* ── STATS GRID ── */
-    .stats-grid {
-      width:92%; max-width:380px;
-      display:grid; grid-template-columns:repeat(4,1fr);
-      gap:8px; margin:0 auto 8px;
-    }
-    .stat-card {
-      background:var(--panel);
-      border:2px solid rgba(22,75,69,.15);
-      border-radius:12px;
-      box-shadow:0 2px 8px var(--shadow);
-      padding:10px 4px; text-align:center;
-    }
-    .stat-n {
-      font-family:"Baloo 2"; font-weight:800;
-      font-size:clamp(22px,5vw,28px);
-      color:var(--deep); line-height:1;
-    }
-    .stat-lbl {
-      font-family:"Nunito"; font-size:8px; font-weight:700;
-      color:var(--stone); margin-top:4px; line-height:1.3;
-      text-transform:uppercase; letter-spacing:.5px;
-    }
-    .stat-card.gold  .stat-n { color:var(--gold); }
-    .stat-card.teal  .stat-n { color:var(--water); }
-    .stat-card.lime  .stat-n { color:var(--grass); }
-    .stat-card.diam  .stat-n { color:var(--ruby); }
-
-    /* ── TIME METER ── */
-    .meter-panel {
-      width:92%; max-width:380px;
-      background:var(--panel);
-      border:2px solid rgba(22,75,69,.15);
-      border-radius:12px;
-      box-shadow:0 2px 8px var(--shadow);
-      padding:12px 14px; margin:0 auto 10px;
-    }
-    .meter-hdr {
-      font-family:"Nunito"; font-size:10px; font-weight:700;
-      color:var(--water); letter-spacing:1.5px; text-transform:uppercase;
-      margin-bottom:8px; text-align:center;
-    }
-    .meter-track {
-      background:rgba(22,75,69,.12); border-radius:6px;
-      height:22px; position:relative; overflow:hidden;
-    }
-    .meter-fill {
-      height:100%; width:0%; border-radius:6px;
-      background:linear-gradient(90deg,var(--lime) 0%,var(--gold) 65%,var(--red) 100%);
-      transition:width 1s ease;
-    }
-    .meter-msg {
-      font-family:"Nunito"; font-size:10px; font-weight:700;
-      color:var(--deep); margin-top:7px; text-align:center; line-height:1.5;
-    }
-
-    /* ── BUTTONS ── */
-    .action-grid {
-      width:92%; max-width:380px;
-      display:grid; grid-template-columns:1fr 1fr;
-      gap:12px; margin:0 auto 10px;
-    }
-    .btn-action {
+    .cd-label{ font-family:"Nunito"; font-size:9px; font-weight:700; color:rgba(255,255,255,.6); letter-spacing:1px; text-transform:uppercase; }
+    .cd-time{ font-family:"Baloo 2"; font-weight:800; font-size:22px; color:var(--diam); letter-spacing:1px; }
+    .cd-time.warn{ color:var(--pee); } .cd-time.urgent{ color:var(--red); animation:pulse .5s infinite alternate; }
+    /* ── HUB GRID ── */
+    .hub-grid{ width:92%; max-width:400px; display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:8px auto; }
+    .hub-btn{
       font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer;
-      border-radius:14px; padding:20px 12px;
-      font-size:clamp(13px,3.5vw,15px); line-height:1.5;
+      border-radius:14px; padding:18px 10px 14px; font-size:clamp(12px,3.2vw,14px);
       display:flex; flex-direction:column; align-items:center; gap:6px;
-      box-shadow:0 5px 0 rgba(0,0,0,.2);
-      transition:transform .1s, box-shadow .1s;
+      box-shadow:0 5px 0 rgba(0,0,0,.18); transition:transform .1s, box-shadow .1s;
+      -webkit-user-select:none; user-select:none; line-height:1.3;
+    }
+    .hub-btn:active{ transform:translateY(4px); box-shadow:0 1px 0 rgba(0,0,0,.18); }
+    .hub-btn-em{ font-size:34px; line-height:1; }
+    .hb-pee  { background:linear-gradient(160deg,#ffe066,var(--pee)); color:#3d2d00; }
+    .hb-poop { background:linear-gradient(160deg,#c49a6c,var(--poop)); color:#fff; }
+    .hb-stats{ background:linear-gradient(160deg,#a9fff6,var(--water)); color:var(--navy); }
+    .hb-math { background:linear-gradient(160deg,#d4aaff,#8855cc); color:#fff; }
+    .hb-bus  { background:linear-gradient(160deg,#ffb347,#e65c00); color:#fff; }
+    .hb-qr   { background:linear-gradient(160deg,#cdd4db,var(--stone)); color:var(--navy); }
+    /* ── VOICE TOGGLE ── */
+    .voice-bar{ width:92%; max-width:400px; margin:4px auto;
+                background:rgba(16,44,47,.5); border-radius:10px;
+                padding:8px 14px; display:flex; align-items:center; justify-content:space-between; }
+    .voice-lbl{ font-family:"Nunito"; font-size:10px; font-weight:700; color:rgba(255,255,255,.7); }
+    .voice-toggle{ font-family:"Nunito"; font-size:10px; font-weight:900;
+                   background:var(--lime); color:#fff; border:none; cursor:pointer;
+                   padding:6px 14px; border-radius:8px; }
+    .voice-toggle.muted{ background:var(--stone); }
+    /* ── TRACKER SCREEN ── */
+    .dig-clock{
+      font-family:"Baloo 2"; font-weight:800; font-size:clamp(36px,10vw,54px);
+      color:var(--deep); text-align:center; letter-spacing:2px;
+      background:var(--panel); border:2.5px solid rgba(22,75,69,.18);
+      border-radius:14px; box-shadow:0 3px 12px var(--shadow);
+      padding:14px 24px; margin:10px auto; width:92%; max-width:400px;
+      transition:color .5s;
+    }
+    .dig-clock.warn{ color:var(--gold); }
+    .dig-clock.alert{ color:var(--red); animation:pulse .5s infinite alternate; }
+    @keyframes pulse{ from{transform:scale(1)} to{transform:scale(1.04)} }
+    .dig-sub{ font-family:"Nunito"; font-size:10px; font-weight:700; color:var(--stone); text-align:center; margin-top:-4px; margin-bottom:8px; }
+    .meter-card{ width:92%; max-width:400px; background:var(--panel); border:2px solid rgba(22,75,69,.14); border-radius:12px; box-shadow:0 2px 8px var(--shadow); padding:12px 14px; margin:0 auto 8px; }
+    .meter-hdr{ font-family:"Nunito"; font-size:9px; font-weight:700; color:var(--water); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:7px; text-align:center; }
+    .meter-track{ background:rgba(22,75,69,.1); border-radius:6px; height:20px; overflow:hidden; }
+    .meter-fill{ height:100%; width:0%; border-radius:6px; background:linear-gradient(90deg,var(--lime) 0%,var(--gold) 65%,var(--red) 100%); transition:width 1s ease; }
+    .meter-msg{ font-family:"Nunito"; font-size:10px; font-weight:700; color:var(--deep); margin-top:6px; text-align:center; }
+    .action-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; width:92%; max-width:400px; margin:8px auto; }
+    .act-btn{
+      font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; border-radius:14px;
+      padding:20px 10px; font-size:clamp(12px,3.2vw,14px); line-height:1.5;
+      display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center;
+      box-shadow:0 5px 0 rgba(0,0,0,.2); transition:transform .1s, box-shadow .1s;
       -webkit-user-select:none; user-select:none;
     }
-    .btn-action:active { transform:translateY(4px); box-shadow:0 1px 0 rgba(0,0,0,.2); }
-    .btn-go   { background:linear-gradient(160deg,#fcce38,#e8a000); color:var(--navy); }
-    .btn-done { background:linear-gradient(160deg,#3de589,#1faa56); color:#fff; }
-    .btn-emoji-big { font-size:32px; line-height:1; }
-
-    .btn-bus {
-      width:92%; max-width:380px; margin:0 auto 12px;
+    .act-btn:active{ transform:translateY(4px); box-shadow:0 1px 0 rgba(0,0,0,.2); }
+    .act-em{ font-size:32px; line-height:1; }
+    .ab-pee-go  { background:linear-gradient(160deg,#ffe066,var(--pee));  color:#3d2d00; }
+    .ab-pee-did { background:linear-gradient(160deg,#ffe79a,#f0b800);     color:#3d2d00; }
+    .ab-poop-go { background:linear-gradient(160deg,#c49a6c,var(--poop)); color:#fff; }
+    .ab-poop-did{ background:linear-gradient(160deg,#a97850,#6b3d1e);     color:#fff; }
+    .btn-bus-big{
+      width:92%; max-width:400px; margin:6px auto;
       font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer;
-      background:linear-gradient(160deg,#ff8c3a,#cc4400); color:#fff;
-      border-radius:14px; padding:18px 20px;
-      font-size:clamp(14px,4vw,17px);
-      display:flex; align-items:center; justify-content:center; gap:12px;
-      box-shadow:0 5px 0 rgba(0,0,0,.2);
-      transition:transform .1s, box-shadow .1s;
+      background:linear-gradient(160deg,#ffb347,#e65c00); color:#fff;
+      border-radius:14px; padding:17px 20px; font-size:clamp(13px,3.8vw,16px);
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      box-shadow:0 5px 0 rgba(0,0,0,.2); transition:transform .1s, box-shadow .1s;
       -webkit-user-select:none; user-select:none;
     }
-    .btn-bus:active { transform:translateY(4px); box-shadow:0 1px 0 rgba(0,0,0,.2); }
-
-    .btn-back {
-      font-family:"Nunito"; font-size:12px; font-weight:900;
-      background:rgba(22,75,69,.12); color:var(--deep);
+    .btn-bus-big:active{ transform:translateY(4px); }
+    .btn-back{
+      font-family:"Nunito"; font-size:11px; font-weight:900;
+      background:rgba(22,75,69,.1); color:var(--deep);
       border:2px solid rgba(22,75,69,.2); border-radius:8px;
-      padding:8px 14px; cursor:pointer;
+      padding:7px 13px; cursor:pointer;
     }
-    .btn-back:active { background:rgba(22,75,69,.2); }
-
-    /* ── ALERT OVERLAY ── */
-    #alertOverlay {
-      display:none; position:fixed; inset:0; z-index:9999;
-      background:rgba(220,40,0,.91); backdrop-filter:blur(4px);
-      flex-direction:column; align-items:center; justify-content:center;
-      text-align:center;
-    }
-    #alertOverlay.show { display:flex; }
-    .alert-icon  { font-size:80px; animation:shake .3s linear infinite; }
-    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px) rotate(-4deg)} 75%{transform:translateX(8px) rotate(4deg)} }
-    .alert-msg {
-      font-family:"Baloo 2"; font-size:clamp(20px,6vw,26px); font-weight:800;
-      color:#fff; padding:16px 20px; line-height:1.6;
-      text-shadow:3px 3px 0 rgba(0,0,0,.4);
-      animation:pulse .4s infinite alternate;
-    }
-    .btn-alert {
+    /* ── STATS SCREEN ── */
+    .graph-wrap{ width:92%; max-width:400px; margin:8px auto; background:var(--panel); border:2.5px solid rgba(22,75,69,.18); border-radius:16px; box-shadow:0 4px 18px var(--shadow); padding:14px 10px; }
+    #graphCanvas{ width:100%; border-radius:6px; }
+    .graph-legend{ display:flex; gap:14px; justify-content:center; margin-top:8px; }
+    .leg{ font-family:"Nunito"; font-size:9px; font-weight:700; display:flex; align-items:center; gap:4px; }
+    .leg-dot{ width:10px; height:10px; border-radius:2px; }
+    .records-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; width:92%; max-width:400px; margin:6px auto; }
+    .rec-tile{ background:var(--panel); border:2px solid rgba(22,75,69,.14); border-radius:12px; padding:10px 6px; text-align:center; box-shadow:0 2px 8px var(--shadow); }
+    .rec-n{ font-family:"Baloo 2"; font-weight:800; font-size:clamp(22px,5.5vw,30px); color:var(--deep); line-height:1; }
+    .rec-l{ font-family:"Nunito"; font-size:8px; font-weight:700; color:var(--stone); margin-top:4px; line-height:1.3; text-transform:uppercase; }
+    /* ── MATH SCREEN ── */
+    #screen-math{ background:linear-gradient(160deg,#0a2040 0%,#0e3060 100%); }
+    .math-header{ font-family:"Baloo 2"; font-size:clamp(16px,5vw,22px); font-weight:800; color:var(--diam); text-align:center; padding:20px 16px 6px; line-height:1.5; text-shadow:0 0 20px var(--aqua); }
+    .math-sub{ font-family:"Nunito"; font-size:11px; font-weight:700; color:rgba(255,255,255,.65); text-align:center; padding:0 16px 12px; }
+    .math-qbox{ width:90%; max-width:380px; background:rgba(255,255,255,.1); border:2px solid rgba(79,227,209,.3); border-radius:14px; padding:18px; margin:0 auto 10px; }
+    .math-q{ font-family:"Baloo 2"; font-size:clamp(18px,5vw,24px); font-weight:800; color:#fff; text-align:center; line-height:1.4; }
+    .math-timer-track{ background:rgba(255,255,255,.12); height:10px; border-radius:6px; margin-top:12px; overflow:hidden; }
+    .math-timer-fill{ height:100%; width:100%; background:linear-gradient(90deg,var(--lime),var(--gold),var(--red)); transition:width .1s linear; border-radius:6px; }
+    .math-choices{ display:grid; grid-template-columns:1fr 1fr; gap:10px; width:90%; max-width:380px; margin:0 auto; }
+    .math-choice{
       font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer;
-      background:#fff; color:var(--red);
-      font-size:16px; padding:20px 36px; border-radius:14px; margin-top:10px;
-      box-shadow:0 5px 0 rgba(0,0,0,.25);
+      background:rgba(255,255,255,.12); border:2px solid rgba(255,255,255,.2);
+      color:#fff; font-size:clamp(16px,4.5vw,20px); border-radius:12px; padding:18px 10px;
+      transition:background .15s, transform .1s;
     }
-    .btn-alert:active { transform:translateY(4px); }
-
-    /* ═════ GO SCREEN ═════ */
-    #screen-go {
-      background:linear-gradient(160deg,#0a3d62 0%,#154360 100%);
-    }
-    .go-hero { font-size:90px; display:block; text-align:center;
-               margin:20px auto 4px; animation:shake .5s linear infinite; }
-    .go-title {
-      font-family:"Baloo 2"; font-size:clamp(18px,5.5vw,24px); font-weight:800;
-      color:#fff; text-align:center; padding:8px 20px; line-height:1.6;
-      text-shadow:3px 3px 0 rgba(0,0,0,.5);
-    }
-    .steps-card {
-      width:92%; max-width:380px;
-      background:rgba(255,250,240,.1); border:2px solid rgba(255,255,255,.2);
-      border-radius:14px; padding:14px; margin:12px auto;
-    }
-    .step { display:flex; align-items:center; gap:12px;
-            padding:10px 0; border-bottom:1px solid rgba(255,255,255,.1);
-            font-family:"Nunito"; font-size:13px; font-weight:700; color:#fff; line-height:1.4; }
-    .step:last-child { border-bottom:none; }
-    .step-icon { font-size:24px; flex-shrink:0; }
-    .btn-idid {
-      width:90%; max-width:380px; margin:10px auto;
-      font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer;
-      background:linear-gradient(160deg,#3de589,#1faa56); color:#fff;
-      font-size:clamp(14px,4vw,17px); padding:22px;
-      border-radius:14px; text-align:center;
-      box-shadow:0 5px 0 rgba(0,0,0,.25);
-      display:flex; align-items:center; justify-content:center; gap:10px;
-    }
-    .btn-idid:active { transform:translateY(4px); }
-
-    /* ═════ CELEBRATE SCREEN ═════ */
-    #screen-celebrate {
-      background:linear-gradient(160deg,#05101a 0%,#0a2640 100%);
-    }
-    .celeb-header {
-      font-family:"Baloo 2"; font-size:clamp(18px,5.5vw,24px); font-weight:800;
-      color:var(--diamond); text-align:center; padding:24px 16px 8px; line-height:1.6;
-      text-shadow:0 0 28px var(--aqua);
-      animation:pulse .5s infinite alternate;
-    }
-    .celeb-rain { position:relative; width:100%; height:90px; overflow:hidden; }
-    .cp { position:absolute; animation:cpFall linear forwards; opacity:0; }
-    @keyframes cpFall { 0%{transform:translateY(-40px) rotate(0);opacity:1} 100%{transform:translateY(100px) rotate(380deg);opacity:.2} }
-    .celeb-grid {
-      width:90%; max-width:380px;
-      display:grid; grid-template-columns:1fr 1fr;
-      gap:10px; margin:10px auto;
-    }
-    .celeb-card {
-      background:rgba(255,250,240,.08); border:2px solid rgba(79,227,209,.3);
-      border-radius:12px; padding:14px 8px; text-align:center;
-    }
-    .celeb-big {
-      font-family:"Baloo 2"; font-weight:800;
-      font-size:clamp(36px,10vw,48px); color:var(--gold); line-height:1;
-    }
-    .celeb-lbl {
-      font-family:"Nunito"; font-size:9px; font-weight:700;
-      color:rgba(255,255,255,.5); margin-top:5px; line-height:1.4;
-      text-transform:uppercase; letter-spacing:.5px;
-    }
-    .celeb-math {
-      font-family:"Baloo 2"; font-size:13px; font-weight:700;
-      color:var(--aqua); text-align:center; padding:8px 20px; line-height:2;
-    }
-    .btn-keep {
-      font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer;
-      background:linear-gradient(160deg,var(--aqua),var(--water));
-      color:var(--navy); font-size:15px; padding:20px 40px;
-      border-radius:14px; margin:14px auto;
-      box-shadow:0 5px 0 rgba(0,0,0,.3);
-      display:block;
-    }
-    .btn-keep:active { transform:translateY(4px); }
-
-    /* ═════ BUS SCREENS ═════ */
-    #screen-bus, #screen-bus-go {
-      background:linear-gradient(160deg,#3d1100 0%,#6b2200 100%);
-    }
-    .bus-hero  { font-size:80px; display:block; text-align:center; margin:24px auto 8px; animation:bounce 1.2s ease-in-out infinite; }
-    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
-    .bus-title {
-      font-family:"Baloo 2"; font-size:clamp(18px,5.5vw,24px); font-weight:800;
-      color:#FF9A30; text-align:center; padding:8px 20px; line-height:1.6;
-      text-shadow:3px 3px 0 rgba(0,0,0,.5);
-    }
-    .bus-card {
-      width:90%; max-width:380px;
-      background:rgba(255,255,255,.1); border:2px solid rgba(255,255,255,.2);
-      border-radius:14px; padding:16px 18px; margin:10px auto;
-      font-family:"Nunito"; font-size:13px; font-weight:700;
-      color:#eee; line-height:2.2;
-    }
-    .bus-btns {
-      display:grid; grid-template-columns:1fr 1fr;
-      gap:14px; width:90%; max-width:380px; margin:6px auto;
-    }
-    .btn-yes    { font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; border-radius:12px; padding:20px 10px; font-size:13px; line-height:1.8; text-align:center; background:linear-gradient(160deg,#3de589,#1faa56); color:#fff; box-shadow:0 4px 0 rgba(0,0,0,.25); }
-    .btn-notyet { font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; border-radius:12px; padding:20px 10px; font-size:13px; line-height:1.8; text-align:center; background:linear-gradient(160deg,#fcce38,#e8a000); color:var(--navy); box-shadow:0 4px 0 rgba(0,0,0,.25); }
-    .btn-yes:active, .btn-notyet:active { transform:translateY(4px); }
-    .go-hero2 { font-size:80px; display:block; text-align:center; margin:28px auto 8px; animation:shake .5s linear infinite; }
-    .go-sub {
-      font-family:"Nunito"; font-size:13px; font-weight:700;
-      color:rgba(255,255,255,.75); text-align:center;
-      padding:0 24px; line-height:2.4; max-width:340px;
-    }
-    .btn-tried {
-      font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer;
-      background:linear-gradient(160deg,#3de589,#1faa56); color:#fff;
-      font-size:15px; padding:22px 40px; border-radius:14px;
-      margin:20px auto; display:block;
-      box-shadow:0 5px 0 rgba(0,0,0,.25);
-    }
-    .btn-tried:active { transform:translateY(4px); }
-
-    /* ═════ QR SCREEN ═════ */
-    #screen-qr { background:var(--white); }
-    .qr-title {
-      font-family:"Baloo 2"; font-size:20px; font-weight:800;
-      color:var(--deep); text-align:center; padding:24px 20px 10px;
-      line-height:1.6;
-    }
-    #qrcode { background:#fff; padding:14px; margin:8px auto; display:inline-block;
-              border:4px solid var(--water); border-radius:8px;
-              box-shadow:0 4px 14px var(--shadow); }
-    .qr-url {
-      font-family:"Nunito"; font-size:9px; font-weight:700;
-      color:var(--stone); text-align:center; padding:10px 20px;
-      word-break:break-all; max-width:320px; line-height:1.8;
-    }
-    .qr-note {
-      font-family:"Nunito"; font-size:10px; font-weight:700;
-      color:var(--stone); text-align:center; padding:0 20px 20px; line-height:2;
-    }
-
-    /* ═════ 30-MIN CHECK-IN OVERLAY ═════ */
-    #checkIn {
-      display:none; position:fixed; inset:0; z-index:8888;
-      background:rgba(10,30,26,0.93); backdrop-filter:blur(6px);
-      flex-direction:column; align-items:center; justify-content:center;
-      text-align:center; padding:20px;
-    }
-    #checkIn.show { display:flex; }
-    .ci-ring {
-      font-size:70px; animation:ciRing .4s ease-in-out infinite alternate;
-      margin-bottom:8px;
-    }
-    @keyframes ciRing { from{transform:rotate(-15deg) scale(1)} to{transform:rotate(15deg) scale(1.1)} }
-    .ci-title {
-      font-family:"Baloo 2"; font-size:clamp(18px,5.5vw,24px); font-weight:800;
-      color:var(--diamond); line-height:1.5; margin-bottom:4px;
-      text-shadow:0 0 20px var(--aqua);
-    }
-    .ci-sub {
-      font-family:"Nunito"; font-size:13px; font-weight:700;
-      color:rgba(255,255,255,.7); margin-bottom:20px; line-height:1.6;
-    }
-    .ci-timer {
-      font-family:"Baloo 2"; font-size:11px; font-weight:700;
-      color:var(--water); letter-spacing:1px; margin-bottom:16px;
-    }
-    .ci-btn {
-      font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer;
-      border-radius:14px; padding:18px 20px; font-size:14px;
-      width:100%; max-width:340px; margin:6px auto;
-      display:flex; align-items:center; justify-content:center; gap:10px;
-      box-shadow:0 4px 0 rgba(0,0,0,.3);
-      transition:transform .1s, box-shadow .1s;
-    }
-    .ci-btn:active { transform:translateY(3px); box-shadow:0 1px 0 rgba(0,0,0,.3); }
-    .ci-btn-red    { background:linear-gradient(160deg,#ff5a30,#cc2200); color:#fff; }
-    .ci-btn-gold   { background:linear-gradient(160deg,#fcce38,#e8a000); color:#102c2f; }
-    .ci-btn-green  { background:linear-gradient(160deg,#3de589,#1faa56); color:#fff; }
-    .ci-next {
-      font-family:"Nunito"; font-size:10px; font-weight:700;
-      color:rgba(255,255,255,.35); margin-top:14px;
-    }
+    .math-choice:active{ transform:scale(.97); }
+    .math-choice.correct{ background:var(--lime); border-color:var(--grass); }
+    .math-choice.wrong{ background:rgba(200,40,40,.7); border-color:#cc2200; }
+    .math-skip{ font-family:"Nunito"; font-size:10px; font-weight:700; color:rgba(255,255,255,.4); background:none; border:none; cursor:pointer; margin:12px auto; display:block; }
+    .stars-row{ display:flex; justify-content:center; gap:8px; margin:8px 0; }
+    .star{ font-size:28px; opacity:.25; transition:opacity .3s, transform .3s; }
+    .star.lit{ opacity:1; transform:scale(1.2); }
+    /* ── CELEBRATE ── */
+    #screen-celebrate{ background:linear-gradient(160deg,#050e18 0%,#0a2040 100%); }
+    .celeb-title{ font-family:"Baloo 2"; font-size:clamp(18px,5.5vw,24px); font-weight:800; color:var(--diam); text-align:center; padding:22px 16px 6px; line-height:1.6; text-shadow:0 0 26px var(--aqua); animation:pulse .5s infinite alternate; }
+    .celeb-rain{ position:relative; width:100%; height:90px; overflow:hidden; flex-shrink:0; }
+    .cp{ position:absolute; animation:cpFall linear forwards; opacity:0; }
+    @keyframes cpFall{ 0%{transform:translateY(-40px) rotate(0);opacity:1} 100%{transform:translateY(100px) rotate(380deg);opacity:.15} }
+    .celeb-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; width:90%; max-width:380px; margin:8px auto; }
+    .celeb-card{ background:rgba(255,250,240,.08); border:2px solid rgba(79,227,209,.25); border-radius:12px; padding:12px 8px; text-align:center; }
+    .celeb-n{ font-family:"Baloo 2"; font-weight:800; font-size:clamp(32px,9vw,44px); color:var(--gold); line-height:1; }
+    .celeb-l{ font-family:"Nunito"; font-size:8px; font-weight:700; color:rgba(255,255,255,.45); margin-top:4px; text-transform:uppercase; letter-spacing:.4px; }
+    .celeb-math-txt{ font-family:"Baloo 2"; font-size:12px; font-weight:700; color:var(--aqua); text-align:center; padding:6px 16px; line-height:1.8; }
+    .btn-keep{ font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; background:linear-gradient(160deg,var(--aqua),var(--water)); color:var(--navy); font-size:15px; padding:18px 40px; border-radius:14px; margin:12px auto; box-shadow:0 5px 0 rgba(0,0,0,.3); display:block; }
+    .btn-keep:active{ transform:translateY(4px); }
+    /* ── BUS ── */
+    #screen-bus,#screen-bus-go{ background:linear-gradient(160deg,#3d1100,#6b2200); }
+    .bus-hero{ font-size:76px; display:block; text-align:center; margin:22px auto 8px; animation:bounce 1.2s ease-in-out infinite; }
+    @keyframes bounce{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    .bus-title{ font-family:"Baloo 2"; font-size:clamp(17px,5vw,22px); font-weight:800; color:#FF9A30; text-align:center; padding:6px 20px; line-height:1.6; text-shadow:3px 3px 0 rgba(0,0,0,.5); }
+    .bus-card{ width:90%; max-width:380px; background:rgba(255,255,255,.1); border:2px solid rgba(255,255,255,.2); border-radius:14px; padding:14px 16px; margin:10px auto; font-family:"Nunito"; font-size:12px; font-weight:700; color:#eee; line-height:2.2; }
+    .bus-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; width:90%; max-width:380px; margin:6px auto; }
+    .bus-yes{ font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; border-radius:12px; padding:18px 10px; font-size:12px; line-height:1.8; text-align:center; background:linear-gradient(160deg,#3de589,#1faa56); color:#fff; box-shadow:0 4px 0 rgba(0,0,0,.25); }
+    .bus-nope{ font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; border-radius:12px; padding:18px 10px; font-size:12px; line-height:1.8; text-align:center; background:linear-gradient(160deg,#ffe066,var(--pee)); color:#3d2d00; box-shadow:0 4px 0 rgba(0,0,0,.25); }
+    .bus-yes:active,.bus-nope:active{ transform:translateY(3px); }
+    .go-hero{ font-size:80px; display:block; text-align:center; margin:24px auto 8px; animation:shake .5s linear infinite; }
+    @keyframes shake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-7px) rotate(-4deg)} 75%{transform:translateX(7px) rotate(4deg)} }
+    .go-sub{ font-family:"Nunito"; font-size:12px; font-weight:700; color:rgba(255,255,255,.72); text-align:center; padding:0 22px; line-height:2.4; max-width:340px; }
+    .btn-tried{ font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; background:linear-gradient(160deg,#3de589,#1faa56); color:#fff; font-size:15px; padding:20px 38px; border-radius:14px; margin:18px auto; display:block; box-shadow:0 5px 0 rgba(0,0,0,.25); }
+    .btn-tried:active{ transform:translateY(4px); }
+    /* ── STEPS ── */
+    .steps-card{ width:90%; max-width:380px; background:rgba(255,255,255,.1); border:2px solid rgba(255,255,255,.18); border-radius:14px; padding:12px 14px; margin:10px auto; }
+    .step{ display:flex; align-items:center; gap:11px; padding:9px 0; border-bottom:1px solid rgba(255,255,255,.08); font-family:"Nunito"; font-size:12px; font-weight:700; color:#fff; line-height:1.4; }
+    .step:last-child{ border-bottom:none; }
+    .step-i{ font-size:22px; flex-shrink:0; }
+    .btn-did{ width:88%; max-width:380px; margin:10px auto; font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; border-radius:14px; padding:20px; font-size:clamp(13px,3.8vw,16px); display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 5px 0 rgba(0,0,0,.25); }
+    .btn-did:active{ transform:translateY(4px); }
+    /* ── ACHIEVEMENT ── */
+    #achieveToast{ position:fixed; top:-100px; left:50%; transform:translateX(-50%); z-index:9998; background:rgba(16,44,47,.96); border:2px solid var(--diam); border-radius:14px; padding:12px 20px; text-align:center; white-space:nowrap; transition:top .4s cubic-bezier(.34,1.56,.64,1); box-shadow:0 8px 30px rgba(0,0,0,.4); }
+    #achieveToast.show{ top:70px; }
+    .at-icon{ font-size:26px; }
+    .at-title{ font-family:"Baloo 2"; font-size:12px; font-weight:800; color:var(--gold); margin-top:2px; }
+    .at-name{ font-family:"Nunito"; font-size:10px; font-weight:700; color:var(--aqua); }
+    /* ── CHECK-IN OVERLAY ── */
+    #checkIn{ display:none; position:fixed; inset:0; z-index:8888; background:rgba(10,26,22,.95); backdrop-filter:blur(8px); flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; }
+    #checkIn.show{ display:flex; }
+    .ci-ring{ font-size:64px; animation:ciRing .45s ease-in-out infinite alternate; margin-bottom:6px; }
+    @keyframes ciRing{ from{transform:rotate(-16deg) scale(1)} to{transform:rotate(16deg) scale(1.12)} }
+    .ci-title{ font-family:"Baloo 2"; font-size:clamp(18px,5.5vw,24px); font-weight:800; color:var(--diam); line-height:1.4; margin-bottom:2px; text-shadow:0 0 18px var(--aqua); }
+    .ci-sub{ font-family:"Nunito"; font-size:12px; font-weight:700; color:rgba(255,255,255,.65); margin-bottom:6px; line-height:1.6; }
+    .ci-countbar{ width:100%; max-width:320px; background:rgba(255,255,255,.1); height:8px; border-radius:4px; margin:0 auto 16px; overflow:hidden; }
+    .ci-countfill{ height:100%; width:100%; background:var(--diam); transition:width 1s linear; border-radius:4px; }
+    .ci-btn{ font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; border-radius:14px; padding:16px 18px; font-size:14px; width:100%; max-width:320px; margin:5px auto; display:flex; align-items:center; gap:10px; box-shadow:0 4px 0 rgba(0,0,0,.3); transition:transform .1s; }
+    .ci-btn:active{ transform:translateY(3px); }
+    .ci-pee  { background:linear-gradient(160deg,#ffe066,var(--pee));  color:#3d2d00; }
+    .ci-poop { background:linear-gradient(160deg,#c49a6c,var(--poop)); color:#fff; }
+    .ci-soon { background:linear-gradient(160deg,#aaa,#777);           color:#fff; }
+    .ci-good { background:linear-gradient(160deg,#3de589,#1faa56);     color:#fff; }
+    .ci-num{ font-family:"Nunito"; font-size:9px; font-weight:700; color:rgba(255,255,255,.3); margin-top:12px; }
+    /* ── ALERT ── */
+    #alertOverlay{ display:none; position:fixed; inset:0; z-index:9999; background:rgba(200,30,0,.92); backdrop-filter:blur(4px); flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+    #alertOverlay.show{ display:flex; }
+    .al-icon{ font-size:80px; animation:shake .3s linear infinite; }
+    .al-msg{ font-family:"Baloo 2"; font-size:clamp(19px,5.5vw,25px); font-weight:800; color:#fff; padding:14px 20px; line-height:1.7; text-shadow:3px 3px 0 rgba(0,0,0,.4); animation:pulse .4s infinite alternate; }
+    .btn-alert{ font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; background:#fff; color:var(--red); font-size:15px; padding:18px 34px; border-radius:14px; margin-top:10px; box-shadow:0 5px 0 rgba(0,0,0,.25); }
+    .btn-alert:active{ transform:translateY(4px); }
+    /* ── QR ── */
+    #screen-qr{ background:var(--white); }
+    .qr-title{ font-family:"Baloo 2"; font-size:20px; font-weight:800; color:var(--deep); text-align:center; padding:22px 20px 10px; line-height:1.5; }
+    #qrcode{ background:#fff; padding:13px; margin:6px auto; display:inline-block; border:4px solid var(--water); border-radius:8px; box-shadow:0 4px 14px var(--shadow); }
+    .qr-url{ font-family:"Nunito"; font-size:9px; font-weight:700; color:var(--stone); text-align:center; padding:8px 20px; word-break:break-all; max-width:320px; line-height:1.8; }
+    /* ── SETTINGS ── */
+    #screen-settings{ background:linear-gradient(160deg,#e8fff8,#bceee4); }
+    .set-row{ width:90%; max-width:380px; background:var(--panel); border:2px solid rgba(22,75,69,.15); border-radius:12px; padding:14px 16px; margin:8px auto; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .set-lbl{ font-family:"Nunito"; font-size:11px; font-weight:700; color:var(--deep); flex:1; line-height:1.4; }
+    .set-select{ font-family:"Nunito"; font-size:12px; font-weight:900; background:var(--water); color:#fff; border:none; border-radius:8px; padding:6px 10px; cursor:pointer; }
+    .btn-danger{ font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; background:var(--red); color:#fff; border-radius:12px; padding:14px 24px; font-size:13px; margin:8px auto; display:block; width:90%; max-width:380px; box-shadow:0 4px 0 var(--dkred); }
+    .btn-danger:active{ transform:translateY(3px); }
   </style>
 </head>
 <body>
-
-<!-- floating blocks -->
+<canvas id="bgCanvas"></canvas>
+<div id="cursorTrail" aria-hidden="true"></div>
 <div class="block-world" aria-hidden="true">
   <span class="voxel v-grass blk-a"></span>
-  <span class="voxel v-diamond blk-b"></span>
-  <span class="voxel v-dirt blk-c"></span>
-  <span class="voxel v-stone blk-d"></span>
-  <span class="voxel v-diamond blk-e"></span>
+  <span class="voxel v-diam  blk-b"></span>
+  <span class="voxel v-dirt  blk-c"></span>
+  <span class="voxel v-diam  blk-d"></span>
 </div>
 
-<!-- ═══ 30-MIN CHECK-IN ═══ -->
+<!-- ═══ ACHIEVEMENT TOAST ═══ -->
+<div id="achieveToast">
+  <div class="at-icon" id="atIcon">🏆</div>
+  <div class="at-title">ACHIEVEMENT UNLOCKED!</div>
+  <div class="at-name" id="atName">—</div>
+</div>
+
+<!-- ═══ CHECK-IN OVERLAY ═══ -->
 <div id="checkIn">
   <span class="ci-ring">⏰</span>
-  <div class="ci-title">POOP CHECK TIME!</div>
-  <div class="ci-sub">How is Jaxon's tummy<br>feeling right now?</div>
-  <div class="ci-timer" id="ciTimer">Check #<span id="ciCount">1</span></div>
-
-  <button class="ci-btn ci-btn-red" onclick="ciAnswer('need')">
-    <span style="font-size:26px">🚨</span> I NEED TO GO!
-  </button>
-  <button class="ci-btn ci-btn-gold" onclick="ciAnswer('maybe')">
-    <span style="font-size:26px">😐</span> MAYBE SOON...
-  </button>
-  <button class="ci-btn ci-btn-green" onclick="ciAnswer('good')">
-    <span style="font-size:26px">😊</span> ALL GOOD!
-  </button>
-
-  <div class="ci-next" id="ciNext">Next check in 30 minutes</div>
+  <div class="ci-title">TOILET CHECK!</div>
+  <div class="ci-sub">How is Jaxon feeling<br>right now?</div>
+  <div class="ci-countbar"><div class="ci-countfill" id="ciFill"></div></div>
+  <button class="ci-btn ci-pee"  onclick="ciAns('pee')"> <span style="font-size:24px">💧</span> I NEED TO PEE!</button>
+  <button class="ci-btn ci-poop" onclick="ciAns('poop')"><span style="font-size:24px">💩</span> I NEED TO POOP!</button>
+  <button class="ci-btn ci-soon" onclick="ciAns('maybe')"><span style="font-size:24px">😐</span> MAYBE IN 10 MIN…</button>
+  <button class="ci-btn ci-good" onclick="ciAns('good')"><span style="font-size:24px">😊</span> ALL GOOD!</button>
+  <div class="ci-num">Check #<span id="ciNum">1</span></div>
 </div>
 
 <!-- ═══ ALERT OVERLAY ═══ -->
 <div id="alertOverlay">
-  <span class="alert-icon">💥</span>
-  <div class="alert-msg">POOP EMERGENCY!<br>GET TO THE TOILET<br>RIGHT NOW! 🚽</div>
+  <span class="al-icon">💥</span>
+  <div class="al-msg" id="alertMsg">POOP EMERGENCY!<br>GET TO THE TOILET!</div>
   <button class="btn-alert" onclick="goNow()">I'M GOING NOW!</button>
 </div>
 
 
-<!-- ════════════════ MAIN SCREEN ════════════════ -->
-<div class="screen active" id="screen-main">
-
+<!-- ══════════════════════ HUB ══════════════════════ -->
+<div class="screen active" id="screen-hub">
   <div class="topbar">
-    <div class="tb-gem">💎 <span id="diamondCount">0</span></div>
-    <span class="tb-title">POOP LAB</span>
-    <div style="display:flex;align-items:center;gap:4px">
-      <div class="tb-today">💩 <span id="todayCount">0</span></div>
-      <button class="btn-qr" onclick="showScreen('qr')">QR</button>
+    <div class="tb-gem">💎 <span id="hubGems">0</span></div>
+    <span class="tb-mid">TOILET LAB</span>
+    <div class="tb-right">
+      <span class="tb-pill" onclick="showScreen('settings')">⚙️</span>
+      <span class="tb-pill" onclick="showScreen('qr')">QR</span>
     </div>
   </div>
 
   <div class="brand">
-    <p class="brand-eyebrow">block-world poop lab</p>
-    <h1><span>JAXON'S</span><span>POOP LAB</span></h1>
-    <span class="brand-badge">Stats Mode: Genius+</span>
+    <p class="eyebrow">block-craft toilet lab</p>
+    <h1><span>JAXON'S</span><span>TOILET LAB</span></h1>
+    <span class="badge">Genius+ Mode</span>
   </div>
 
-  <!-- HERO: total trips -->
-  <div class="hero-panel">
-    <div class="hero-label">TOTAL POOP TRIPS</div>
-    <div class="hero-number" id="heroNum">0</div>
-    <div class="hero-sub" id="heroSub">Last poop: loading…</div>
-  </div>
-
-  <!-- 4-stat row -->
-  <div class="stats-grid">
-    <div class="stat-card gold">
-      <div class="stat-n" id="statToday">0</div>
-      <div class="stat-lbl">Today<br>💩</div>
+  <div class="hero-row">
+    <div class="hero-tile">
+      <div class="hero-n pee-col" id="hubTotalPee">0</div>
+      <div class="hero-lbl">Total Pees 💧</div>
     </div>
-    <div class="stat-card lime">
-      <div class="stat-n" id="statStreak">0</div>
-      <div class="stat-lbl">Day<br>Streak 🔥</div>
-    </div>
-    <div class="stat-card teal">
-      <div class="stat-n" id="statBest">0</div>
-      <div class="stat-lbl">Best<br>Streak 🏆</div>
-    </div>
-    <div class="stat-card diam">
-      <div class="stat-n" id="statGems">0</div>
-      <div class="stat-lbl">Gems<br>💎</div>
+    <div class="hero-tile">
+      <div class="hero-n poop-col" id="hubTotalPoop">0</div>
+      <div class="hero-lbl">Total Poops 💩</div>
     </div>
   </div>
 
-  <!-- time meter -->
-  <div class="meter-panel">
-    <div class="meter-hdr">⏱ TIME SINCE LAST POOP</div>
-    <div class="meter-track">
-      <div class="meter-fill" id="meterFill"></div>
-    </div>
-    <div class="meter-msg" id="meterMsg">All good! Creeper is chill. 😊</div>
+  <div class="stat-row">
+    <div class="stat-tile"><div class="stat-n gc" id="hubToday">0</div><div class="stat-l">Today<br>trips</div></div>
+    <div class="stat-tile"><div class="stat-n lc" id="hubStreak">0</div><div class="stat-l">Day<br>streak 🔥</div></div>
+    <div class="stat-tile"><div class="stat-n tc" id="hubBest">0</div><div class="stat-l">Best<br>streak 🏆</div></div>
+    <div class="stat-tile"><div class="stat-n dc" id="hubGems2">0</div><div class="stat-l">Gems<br>💎</div></div>
   </div>
 
-  <!-- action buttons -->
-  <div class="action-grid">
-    <button class="btn-action btn-go" onclick="showScreen('go')">
-      <span class="btn-emoji-big">🚽</span>
-      GOTTA POOP!
-    </button>
-    <button class="btn-action btn-done" onclick="markWent()">
-      <span class="btn-emoji-big">💩</span>
-      I DID IT! +💎
-    </button>
+  <div class="countdown-band">
+    <span class="cd-label">⏰ NEXT CHECK IN</span>
+    <span class="cd-time" id="cdDisplay">30:00</span>
   </div>
 
-  <button class="btn-bus" onclick="showScreen('bus')">
-    <span style="font-size:28px">🚌</span> BUS TIME CHECK!
-  </button>
+  <div class="hub-grid">
+    <button class="hub-btn hb-pee"  onclick="showScreen('pee')">  <span class="hub-btn-em">💧</span>Pee Tracker</button>
+    <button class="hub-btn hb-poop" onclick="showScreen('poop')"> <span class="hub-btn-em">💩</span>Poop Tracker</button>
+    <button class="hub-btn hb-stats" onclick="showScreen('stats')"><span class="hub-btn-em">📊</span>Stats Lab</button>
+    <button class="hub-btn hb-math" onclick="launchMathPractice()"><span class="hub-btn-em">🧮</span>Math Bonus</button>
+    <button class="hub-btn hb-bus"  onclick="showScreen('bus')">  <span class="hub-btn-em">🚌</span>Bus Check</button>
+    <button class="hub-btn hb-qr"   onclick="showScreen('qr')">   <span class="hub-btn-em">📱</span>QR Code</button>
+  </div>
 
+  <div class="voice-bar">
+    <span class="voice-lbl" id="voiceLabel">🔊 Voice: ON</span>
+    <button class="voice-toggle" id="voiceToggle" onclick="toggleVoice()">Tap to mute</button>
+  </div>
 </div>
 
 
-<!-- ════════════════ GO SCREEN ════════════════ -->
-<div class="screen" id="screen-go">
-
+<!-- ══════════════════════ PEE TRACKER ══════════════════════ -->
+<div class="screen" id="screen-pee">
   <div class="topbar">
-    <button class="btn-back" onclick="showScreen('main')">← Back</button>
-    <span class="tb-title">GO NOW!</span>
-    <span style="width:60px"></span>
+    <button class="btn-back" onclick="showScreen('hub')">← Hub</button>
+    <span class="tb-mid" style="color:var(--pee)">💧 PEE TRACKER</span>
+    <span style="width:55px"></span>
   </div>
-
-  <span class="go-hero">🚽</span>
-  <div class="go-title">THE CREEPER<br>NEEDS TO POOP!<br>GO GO GO! 💨</div>
-
-  <div class="steps-card">
-    <div class="step"><span class="step-icon">1️⃣</span>Walk to the bathroom</div>
-    <div class="step"><span class="step-icon">2️⃣</span>Pull down your pants</div>
-    <div class="step"><span class="step-icon">3️⃣</span>Sit on the toilet</div>
-    <div class="step"><span class="step-icon">4️⃣</span>Push and poop 💩 — take your time</div>
-    <div class="step"><span class="step-icon">5️⃣</span>Wipe and flush 🚿</div>
-    <div class="step"><span class="step-icon">6️⃣</span>Wash hands 🧼</div>
+  <div class="card" style="margin-top:14px">
+    <div class="card-title">TIME SINCE LAST PEE</div>
+    <div class="dig-clock" id="peeClockDisp">00:00:00</div>
+    <div class="dig-sub" id="peeClockSub">all good</div>
   </div>
+  <div class="meter-card">
+    <div class="meter-hdr">💧 BLADDER METER</div>
+    <div class="meter-track"><div class="meter-fill" id="peeMeterFill"></div></div>
+    <div class="meter-msg" id="peeMeterMsg">You just went! No worries. 😊</div>
+  </div>
+  <div class="action-grid">
+    <button class="act-btn ab-pee-go" onclick="showScreen('go-pee')">
+      <span class="act-em">🚽</span>I NEED<br>TO PEE!
+    </button>
+    <button class="act-btn ab-pee-did" onclick="markTrip('pee')">
+      <span class="act-em">💧</span>I JUST<br>PEED! +💎
+    </button>
+  </div>
+</div>
 
-  <button class="btn-idid" onclick="markWent()">
-    <span style="font-size:28px">✅</span> ALL DONE! CREEPER SAVED! +💎
+
+<!-- ══════════════════════ POOP TRACKER ══════════════════════ -->
+<div class="screen" id="screen-poop">
+  <div class="topbar">
+    <button class="btn-back" onclick="showScreen('hub')">← Hub</button>
+    <span class="tb-mid" style="color:#c49a6c">💩 POOP TRACKER</span>
+    <span style="width:55px"></span>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="card-title">TIME SINCE LAST POOP</div>
+    <div class="dig-clock" id="poopClockDisp">00:00:00</div>
+    <div class="dig-sub" id="poopClockSub">all good</div>
+  </div>
+  <div class="meter-card">
+    <div class="meter-hdr">💩 POOP METER</div>
+    <div class="meter-track"><div class="meter-fill" id="poopMeterFill"></div></div>
+    <div class="meter-msg" id="poopMeterMsg">Creeper is chill. 😊</div>
+  </div>
+  <div class="action-grid">
+    <button class="act-btn ab-poop-go" onclick="showScreen('go-poop')">
+      <span class="act-em">🚽</span>I NEED<br>TO POOP!
+    </button>
+    <button class="act-btn ab-poop-did" onclick="markTrip('poop')">
+      <span class="act-em">💩</span>I JUST<br>POOPED! +💎💎
+    </button>
+  </div>
+  <button class="btn-bus-big" onclick="showScreen('bus')">
+    <span style="font-size:26px">🚌</span> BUS TIME CHECK!
   </button>
-
 </div>
 
 
-<!-- ════════════════ CELEBRATE SCREEN ════════════════ -->
+<!-- ══════════════════════ GO-PEE ══════════════════════ -->
+<div class="screen" id="screen-go-pee" style="background:linear-gradient(160deg,#1a3a6e,#0d2045)">
+  <div class="topbar" style="background:rgba(10,20,50,.88)">
+    <button class="btn-back" onclick="showScreen('pee')">← Back</button>
+    <span class="tb-mid" style="color:var(--pee)">GO PEE NOW!</span>
+    <span style="width:55px"></span>
+  </div>
+  <span style="font-size:90px;display:block;text-align:center;margin:20px auto 6px;animation:shake .5s linear infinite">🚽</span>
+  <div class="bus-title" style="color:var(--pee)">GO PEE NOW!<br>BLADDER IS FULL! 💧</div>
+  <div class="steps-card">
+    <div class="step"><span class="step-i">1️⃣</span>Walk to the bathroom</div>
+    <div class="step"><span class="step-i">2️⃣</span>Pull down your pants</div>
+    <div class="step"><span class="step-i">3️⃣</span>Aim and pee 💧</div>
+    <div class="step"><span class="step-i">4️⃣</span>Shake, pull up, flush</div>
+    <div class="step"><span class="step-i">5️⃣</span>Wash hands 🧼</div>
+  </div>
+  <button class="btn-did" style="background:linear-gradient(160deg,#ffe066,var(--pee));color:#3d2d00;" onclick="markTrip('pee')">
+    <span style="font-size:28px">✅</span> ALL DONE! +💎
+  </button>
+</div>
+
+
+<!-- ══════════════════════ GO-POOP ══════════════════════ -->
+<div class="screen" id="screen-go-poop" style="background:linear-gradient(160deg,#0a3d62,#154360)">
+  <div class="topbar" style="background:rgba(5,20,40,.88)">
+    <button class="btn-back" onclick="showScreen('poop')">← Back</button>
+    <span class="tb-mid" style="color:#c49a6c">GO POOP NOW!</span>
+    <span style="width:55px"></span>
+  </div>
+  <span style="font-size:90px;display:block;text-align:center;margin:20px auto 6px;animation:shake .5s linear infinite">🚽</span>
+  <div class="bus-title" style="color:#c49a6c">THE CREEPER<br>NEEDS TO POOP NOW! 💥</div>
+  <div class="steps-card">
+    <div class="step"><span class="step-i">1️⃣</span>Walk to the bathroom</div>
+    <div class="step"><span class="step-i">2️⃣</span>Pull down your pants</div>
+    <div class="step"><span class="step-i">3️⃣</span>Sit on the toilet</div>
+    <div class="step"><span class="step-i">4️⃣</span>Push and poop 💩 — take your time</div>
+    <div class="step"><span class="step-i">5️⃣</span>Wipe well and flush 🚿</div>
+    <div class="step"><span class="step-i">6️⃣</span>Wash hands 🧼</div>
+  </div>
+  <button class="btn-did" style="background:linear-gradient(160deg,#c49a6c,var(--poop));color:#fff;" onclick="markTrip('poop')">
+    <span style="font-size:28px">✅</span> ALL DONE! +💎💎
+  </button>
+</div>
+
+
+<!-- ══════════════════════ MATH ══════════════════════ -->
+<div class="screen" id="screen-math">
+  <div class="topbar" style="background:rgba(5,15,40,.88)">
+    <button class="btn-back" onclick="skipMath()">← Skip</button>
+    <span class="tb-mid" style="color:var(--diam)">MATH BONUS</span>
+    <span style="width:55px"></span>
+  </div>
+  <div class="math-header" id="mathHeader">EARN EXTRA DIAMONDS! 💎</div>
+  <div class="math-sub" id="mathSub">Answer fast for more stars!</div>
+  <div class="stars-row">
+    <span class="star" id="star1">⭐</span>
+    <span class="star" id="star2">⭐</span>
+    <span class="star" id="star3">⭐</span>
+  </div>
+  <div class="math-qbox">
+    <div class="math-q" id="mathQ">Loading…</div>
+    <div class="math-timer-track"><div class="math-timer-fill" id="mathTimerFill"></div></div>
+  </div>
+  <div class="math-choices" id="mathChoices"></div>
+  <button class="math-skip" onclick="skipMath()">skip this question</button>
+</div>
+
+
+<!-- ══════════════════════ CELEBRATE ══════════════════════ -->
 <div class="screen" id="screen-celebrate">
-
-  <div class="topbar" style="background:rgba(5,10,20,0.85)">
+  <div class="topbar" style="background:rgba(3,8,20,.85)">
     <div class="tb-gem">💎 <span id="celebGems">0</span></div>
-    <span class="tb-title" style="color:var(--diamond)">BOOM AVOIDED!</span>
-    <span style="width:60px"></span>
+    <span class="tb-mid" style="color:var(--diam)">BOOM AVOIDED!</span>
+    <span style="width:55px"></span>
   </div>
-
-  <div class="celeb-header">💥 BOOM AVOIDED! 💥<br>CREEPER IS SAFE! 🎉</div>
+  <div class="celeb-title" id="celebTitle">💧 PEE SUCCESS! 💧</div>
   <div class="celeb-rain" id="celebRain"></div>
-
   <div class="celeb-grid">
-    <div class="celeb-card">
-      <div class="celeb-big" id="celebTripNum">1</div>
-      <div class="celeb-lbl">Trip #<br>today</div>
-    </div>
-    <div class="celeb-card">
-      <div class="celeb-big" id="celebTotal">0</div>
-      <div class="celeb-lbl">Total<br>trips 💩</div>
-    </div>
-    <div class="celeb-card">
-      <div class="celeb-big" id="celebStreak">0</div>
-      <div class="celeb-lbl">Day<br>streak 🔥</div>
-    </div>
-    <div class="celeb-card">
-      <div class="celeb-big" id="celebBest">0</div>
-      <div class="celeb-lbl">Best<br>streak 🏆</div>
-    </div>
+    <div class="celeb-card"><div class="celeb-n" id="cTripNum">1</div><div class="celeb-l">trip #<br>today</div></div>
+    <div class="celeb-card"><div class="celeb-n" id="cTotal">0</div>  <div class="celeb-l">total<br>trips 🚽</div></div>
+    <div class="celeb-card"><div class="celeb-n" id="cStreak">0</div> <div class="celeb-l">day<br>streak 🔥</div></div>
+    <div class="celeb-card"><div class="celeb-n" id="cBest">0</div>   <div class="celeb-l">best<br>streak 🏆</div></div>
   </div>
-
-  <div class="celeb-math" id="celebMath"></div>
-
-  <button class="btn-keep" onclick="showScreen('main')">▶ KEEP PLAYING</button>
+  <div class="celeb-math-txt" id="celebMath"></div>
+  <button class="btn-keep" onclick="showScreen('hub')">▶ KEEP PLAYING</button>
 </div>
 
 
-<!-- ════════════════ BUS SCREEN ════════════════ -->
-<div class="screen" id="screen-bus">
-
-  <div class="topbar" style="background:rgba(40,10,0,0.85)">
-    <button class="btn-back" onclick="showScreen('main')">← Back</button>
-    <span class="tb-title" style="color:#FF9A30">BUS TIME</span>
-    <span style="width:60px"></span>
+<!-- ══════════════════════ STATS LAB ══════════════════════ -->
+<div class="screen" id="screen-stats">
+  <div class="topbar">
+    <button class="btn-back" onclick="showScreen('hub')">← Hub</button>
+    <span class="tb-mid">📊 STATS LAB</span>
+    <span style="width:55px"></span>
   </div>
+  <div class="brand" style="padding-top:12px">
+    <p class="eyebrow">7-day breakdown</p>
+    <h1><span style="font-size:22px">JAXON'S</span><span style="font-size:26px">STATS LAB</span></h1>
+  </div>
+  <div class="graph-wrap">
+    <canvas id="graphCanvas" height="160"></canvas>
+    <div class="graph-legend">
+      <span class="leg"><span class="leg-dot" style="background:var(--pee)"></span>Pee 💧</span>
+      <span class="leg"><span class="leg-dot" style="background:var(--poop)"></span>Poop 💩</span>
+    </div>
+  </div>
+  <div class="records-grid">
+    <div class="rec-tile"><div class="rec-n" id="recTotalPee">0</div> <div class="rec-l">total<br>pees 💧</div></div>
+    <div class="rec-tile"><div class="rec-n" id="recTotalPoop">0</div><div class="rec-l">total<br>poops 💩</div></div>
+    <div class="rec-tile"><div class="rec-n" id="recStreak">0</div>   <div class="rec-l">current<br>streak 🔥</div></div>
+    <div class="rec-tile"><div class="rec-n" id="recBest">0</div>     <div class="rec-l">best<br>streak 🏆</div></div>
+    <div class="rec-tile"><div class="rec-n" id="recThisWeek">0</div> <div class="rec-l">this<br>week 📅</div></div>
+    <div class="rec-tile"><div class="rec-n" id="recAvg">0.0</div>    <div class="rec-l">daily<br>avg 📈</div></div>
+  </div>
+</div>
 
+
+<!-- ══════════════════════ BUS ══════════════════════ -->
+<div class="screen" id="screen-bus">
+  <div class="topbar" style="background:rgba(40,10,0,.88)">
+    <button class="btn-back" onclick="showScreen('hub')">← Hub</button>
+    <span class="tb-mid" style="color:#FF9A30">🚌 BUS TIME</span>
+    <span style="width:55px"></span>
+  </div>
   <span class="bus-hero">🚌</span>
-  <div class="bus-title">THE BUS IS COMING!<br>STOP! ✋</div>
-
+  <div class="bus-title">BUS IS COMING!<br>STOP! ✋</div>
   <div class="bus-card">
     Before you get on the bus...<br><br>
-    💩 Did you try to POOP today?<br><br>
-    Even just sitting on the toilet<br>and trying — that counts!<br><br>
-    Poop now = safe bus ride home. ✅
+    💩 Did you TRY to poop at school?<br>
+    💧 Did you pee recently?<br><br>
+    Poop + pee now = safe bus ride home!
   </div>
-
-  <div class="bus-btns">
-    <button class="btn-yes" onclick="busYes()">
-      <span style="font-size:30px">✅</span><br>YES!<br>I POOPED!
-    </button>
-    <button class="btn-notyet" onclick="showScreen('bus-go')">
-      <span style="font-size:30px">⏳</span><br>NOT<br>YET...
-    </button>
+  <div class="bus-grid">
+    <button class="bus-yes"  onclick="busYes()"><span style="font-size:28px">✅</span><br>YES!<br>I WENT!</button>
+    <button class="bus-nope" onclick="showScreen('bus-go')"><span style="font-size:28px">⏳</span><br>NOT<br>YET...</button>
   </div>
-
 </div>
 
 
-<!-- ════════════════ BUS-GO SCREEN ════════════════ -->
+<!-- ══════════════════════ BUS-GO ══════════════════════ -->
 <div class="screen" id="screen-bus-go">
-
-  <div class="topbar" style="background:rgba(40,10,0,0.85)">
+  <div class="topbar" style="background:rgba(40,10,0,.88)">
     <button class="btn-back" onclick="showScreen('bus')">← Back</button>
-    <span class="tb-title" style="color:#FF9A30">GO TRY!</span>
-    <span style="width:60px"></span>
+    <span class="tb-mid" style="color:#FF9A30">GO TRY!</span>
+    <span style="width:55px"></span>
   </div>
-
-  <span class="go-hero2">🏃</span>
-  <div class="bus-title">GO TRY TO POOP<br>BEFORE THE BUS! 💨</div>
-  <div class="go-sub" style="margin-top:12px">
-    Sit on the toilet and push.<br>
-    Even if nothing comes —<br>trying counts and earns a 💎!<br><br>
+  <span class="go-hero">🏃</span>
+  <div class="bus-title">GO TRY BEFORE<br>THE BUS! 💨</div>
+  <div class="go-sub" style="margin-top:10px">
+    Sit on the toilet and try to poop.<br>
+    Even just trying earns a diamond!<br><br>
     Come back when you're done.
   </div>
-
-  <button class="btn-tried" onclick="busDidGo()">
-    <span style="font-size:28px">✅</span> I TRIED! +💎
-  </button>
-
+  <button class="btn-tried" onclick="busDidGo()">✅ I TRIED! +💎</button>
 </div>
 
 
-<!-- ════════════════ QR SCREEN ════════════════ -->
+<!-- ══════════════════════ QR ══════════════════════ -->
 <div class="screen" id="screen-qr">
-
   <div class="topbar">
-    <button class="btn-back" onclick="showScreen('main')">← Back</button>
-    <span class="tb-title">SHARE</span>
-    <span style="width:60px"></span>
+    <button class="btn-back" onclick="showScreen('hub')">← Hub</button>
+    <span class="tb-mid">📱 SHARE</span>
+    <span style="width:55px"></span>
   </div>
-
-  <div class="qr-title">📱 SCAN TO PLAY!</div>
+  <div class="qr-title">Scan to play on any tablet! 📱</div>
   <div id="qrcode"></div>
   <div class="qr-url">dacameragirl.github.io/Jaxons_Potty_Time/</div>
-  <div class="qr-note">Share with school or save<br>to tablet home screen!</div>
+</div>
 
+
+<!-- ══════════════════════ SETTINGS ══════════════════════ -->
+<div class="screen" id="screen-settings">
+  <div class="topbar">
+    <button class="btn-back" onclick="showScreen('hub')">← Hub</button>
+    <span class="tb-mid">⚙️ SETTINGS</span>
+    <span style="width:55px"></span>
+  </div>
+  <div class="brand" style="padding-top:12px">
+    <p class="eyebrow">configuration</p>
+    <h1><span style="font-size:20px">SETTINGS</span></h1>
+  </div>
+  <div class="set-row">
+    <div class="set-lbl">⏰ Check-in interval<br><small style="font-weight:700;color:var(--stone)">How often to beep & ask</small></div>
+    <select class="set-select" id="intervalSel" onchange="saveInterval()">
+      <option value="15">15 min</option>
+      <option value="20">20 min</option>
+      <option value="30" selected>30 min</option>
+      <option value="45">45 min</option>
+      <option value="60">60 min</option>
+    </select>
+  </div>
+  <div class="set-row">
+    <div class="set-lbl">🔊 Voice announcements<br><small style="font-weight:700;color:var(--stone)">Read questions &amp; celebrations aloud</small></div>
+    <button class="voice-toggle" id="settingsVoiceBtn" onclick="toggleVoice()">ON</button>
+  </div>
+  <div class="set-row">
+    <div class="set-lbl">🧮 Math challenge level<br><small style="font-weight:700;color:var(--stone)">Difficulty of bonus questions</small></div>
+    <select class="set-select" id="mathLevelSel" onchange="saveMathLevel()">
+      <option value="1">Easy</option>
+      <option value="2">Medium</option>
+      <option value="3" selected>Genius+</option>
+    </select>
+  </div>
+  <button class="btn-danger" onclick="confirmReset()">🗑️ Reset All Stats</button>
 </div>
 
 
 <script>
-  /* ──────── STATE ──────── */
-  let gems       = parseInt(localStorage.getItem('jx_gems')  || '0');
-  let totalTrips = parseInt(localStorage.getItem('jx_total') || '0');
-  let lastTime   = parseInt(localStorage.getItem('jx_last')  || String(Date.now()));
-  let alertDone  = false;
+/* ══════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════ */
+const S = {
+  gems:      +localStorage.getItem('jx_gems')     || 0,
+  totalPee:  +localStorage.getItem('jx_pee')      || 0,
+  totalPoop: +localStorage.getItem('jx_poop')     || 0,
+  lastPee:   +localStorage.getItem('jx_lastPee')  || Date.now(),
+  lastPoop:  +localStorage.getItem('jx_lastPoop') || Date.now(),
+  checkN:    0,
+  checkMs:   (+localStorage.getItem('jx_interval') || 30) * 60_000,
+  mathLevel: +localStorage.getItem('jx_mathLv')   || 3,
+  voiceOn:    localStorage.getItem('jx_voice') !== 'off',
+  pendingType: null,   // 'pee'|'poop' — waiting for math answer
+  mathCorrect: +localStorage.getItem('jx_mathOk') || 0,
+};
+const PEE_MS  = 2  * 60 * 60_000;  // bladder fills in 2h
+const POOP_MS = 7  * 60 * 60_000;  // poop meter fills in 7h
+let checkTimer = null, ciCountdown = null;
 
-  const FILL_MS  = 6 * 60 * 60 * 1000; // 6 hours for poop meter
-  const WARN_PCT = 0.60;
-  const ALRT_PCT = 0.88;
+function save(k, v){ localStorage.setItem(k, String(v)); }
 
-  /* ── day helpers ── */
-  function dayKey(d = new Date()) {
-    return `jx_d_${d.getFullYear()}_${d.getMonth()}_${d.getDate()}`;
+/* ─── DAY HELPERS ─── */
+function dayKey(t='pee', d=new Date()){
+  return `jx_${t}_${d.getFullYear()}_${d.getMonth()}_${d.getDate()}`;
+}
+function getTodayN(t='pee'){ return +localStorage.getItem(dayKey(t)) || 0; }
+function incToday(t='pee'){ const n=getTodayN(t)+1; save(dayKey(t),n); return n; }
+function calcStreak(){
+  let s=0; const now=new Date();
+  for(let i=0;i<90;i++){
+    const d=new Date(now); d.setDate(d.getDate()-i);
+    if((+localStorage.getItem(dayKey('poop',d))||0)>0) s++;
+    else if(i>0) break;
   }
-  function getTodayN() { return parseInt(localStorage.getItem(dayKey()) || '0'); }
-  function incToday()  { const n = getTodayN()+1; localStorage.setItem(dayKey(), n); return n; }
-
-  function calcStreak() {
-    let s = 0; const today = new Date();
-    for (let i = 0; i < 60; i++) {
-      const d = new Date(today); d.setDate(d.getDate() - i);
-      if (parseInt(localStorage.getItem(dayKey(d)) || '0') > 0) s++;
-      else if (i > 0) break;
-    }
-    return s;
+  return s;
+}
+function getBest(){ return +localStorage.getItem('jx_best')||0; }
+function updateBest(s){ if(s>getBest()){ save('jx_best',s); } return Math.max(s,getBest()); }
+function getTodayTotal(){ return getTodayN('pee')+getTodayN('poop'); }
+function getWeekTotal(){
+  let t=0; const now=new Date();
+  for(let i=0;i<7;i++){
+    const d=new Date(now); d.setDate(d.getDate()-i);
+    t += (+localStorage.getItem(dayKey('pee',d))||0) + (+localStorage.getItem(dayKey('poop',d))||0);
   }
+  return t;
+}
+function getDailyAvg(){
+  const w=getWeekTotal(); return Math.round(w/7*10)/10;
+}
 
-  function getBestStreak() { return parseInt(localStorage.getItem('jx_best') || '0'); }
-  function updateBestStreak(s) {
-    const cur = getBestStreak();
-    if (s > cur) { localStorage.setItem('jx_best', s); return s; }
-    return cur;
-  }
+/* ══════════════════════════════════════════════════
+   AUDIO
+══════════════════════════════════════════════════ */
+let audioCtx = null;
+function unlockAudio(){
+  if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==='suspended') audioCtx.resume();
+}
+document.addEventListener('touchstart', unlockAudio, {passive:true});
+document.addEventListener('click',      unlockAudio, {passive:true});
 
-  /* ──────── INIT ──────── */
-  function init() {
-    updateDisplay();
-    updateMeter();
-    setInterval(updateMeter,    15_000);
-    setInterval(updateHeroSub,  30_000);
-    new QRCode(document.getElementById('qrcode'), {
-      text: 'https://dacameragirl.github.io/Jaxons_Potty_Time/',
-      width: 220, height: 220,
-      colorDark: '#102c2f', colorLight: '#ffffff',
-      correctLevel: QRCode.CorrectLevel.H
+function tone(freq, start, dur, vol=0.28, type='square'){
+  if(!audioCtx) return;
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+  o.connect(g); g.connect(audioCtx.destination);
+  o.type=type; o.frequency.value=freq;
+  const t=audioCtx.currentTime+start;
+  g.gain.setValueAtTime(0,t);
+  g.gain.linearRampToValueAtTime(vol,t+0.03);
+  g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+  o.start(t); o.stop(t+dur+0.01);
+}
+function playCheckBeep(){
+  unlockAudio();
+  [523,659,784].forEach((f,i)=>{ tone(f,i*.22,.2); tone(f,.7+i*.22,.2); });
+}
+function playSuccess(){
+  unlockAudio();
+  [523,659,784,1047].forEach((f,i)=>tone(f,i*.14,.25,.22,'triangle'));
+}
+function playWrong(){
+  unlockAudio();
+  [330,260].forEach((f,i)=>tone(f,i*.18,.3,.2,'sawtooth'));
+}
+
+/* ══════════════════════════════════════════════════
+   VOICE
+══════════════════════════════════════════════════ */
+function bestVoice(){
+  if(!('speechSynthesis' in window)) return null;
+  const vs=window.speechSynthesis.getVoices();
+  const pref=['Google US English','Samantha','Karen','Victoria','Alex'];
+  return pref.map(n=>vs.find(v=>v.name===n)).find(Boolean)
+    || vs.find(v=>v.lang&&v.lang.startsWith('en')) || vs[0] || null;
+}
+function speak(txt){
+  if(!S.voiceOn||!txt||!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(txt);
+  u.voice=bestVoice(); u.rate=0.92; u.pitch=1.1; u.volume=1;
+  window.speechSynthesis.speak(u);
+}
+function toggleVoice(){
+  S.voiceOn=!S.voiceOn;
+  save('jx_voice',S.voiceOn?'on':'off');
+  updateVoiceUI();
+  speak(S.voiceOn?'Voice is on!':'Voice is off.');
+}
+function updateVoiceUI(){
+  const on=S.voiceOn;
+  document.getElementById('voiceLabel').textContent = on?'🔊 Voice: ON':'🔇 Voice: OFF';
+  document.getElementById('voiceToggle').textContent = on?'Tap to mute':'Tap to turn on';
+  document.getElementById('voiceToggle').classList.toggle('muted',!on);
+  document.getElementById('settingsVoiceBtn').textContent = on?'ON':'OFF';
+  document.getElementById('settingsVoiceBtn').classList.toggle('muted',!on);
+}
+
+/* ══════════════════════════════════════════════════
+   BACKGROUND CANVAS — floating numbers & emoji
+══════════════════════════════════════════════════ */
+(function(){
+  const canvas=document.getElementById('bgCanvas');
+  const ctx=canvas.getContext('2d');
+  let W,H,particles=[];
+  const CHARS='0123456789💧💩💎✨🔢∑π√∞';
+  function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+  function mkP(){ return { x:Math.random()*W, y:H+20, s:12+Math.random()*18, sp:.3+Math.random()*.6, a:Math.random()*.25+.04, ch:CHARS[Math.floor(Math.random()*CHARS.length)] }; }
+  function loop(){
+    ctx.clearRect(0,0,W,H);
+    if(particles.length<28&&Math.random()<.05) particles.push(mkP());
+    particles=particles.filter(p=>{
+      p.y-=p.sp;
+      ctx.globalAlpha=p.a;
+      ctx.font=`${p.s}px Nunito,sans-serif`;
+      ctx.fillStyle='#164b45';
+      ctx.fillText(p.ch,p.x,p.y);
+      return p.y>-30;
     });
+    ctx.globalAlpha=1;
+    requestAnimationFrame(loop);
   }
+  window.addEventListener('resize',resize);
+  resize(); loop();
+})();
 
-  function elapsedStr() {
-    const mins = Math.floor((Date.now() - lastTime) / 60_000);
-    if (mins < 1)       return 'just now! ✨';
-    if (mins < 60)      return `${mins} min ago`;
-    const h = Math.floor(mins/60);
-    return `${h}h ${mins%60}m ago`;
+/* ══════════════════════════════════════════════════
+   CURSOR TRAIL
+══════════════════════════════════════════════════ */
+(function(){
+  const trail=document.getElementById('cursorTrail');
+  function spark(x,y){
+    const el=document.createElement('span');
+    el.textContent=['✨','💎','⭐','🔢'][Math.floor(Math.random()*4)];
+    el.style.cssText=`position:absolute;left:${x-12}px;top:${y-12}px;font-size:16px;pointer-events:none;animation:cpFall .8s linear forwards;opacity:1`;
+    trail.appendChild(el);
+    setTimeout(()=>el.remove(),800);
   }
+  document.addEventListener('touchstart',e=>{
+    for(const t of e.changedTouches) spark(t.clientX,t.clientY);
+  },{passive:true});
+})();
 
-  function updateHeroSub() {
-    const pct = Math.min((Date.now() - lastTime) / FILL_MS, 1);
-    const sub  = document.getElementById('heroSub');
-    sub.textContent = `Last poop: ${elapsedStr()}`;
-    sub.className   = pct >= ALRT_PCT ? 'hero-sub alert' : pct >= WARN_PCT ? 'hero-sub warn' : 'hero-sub';
-    const num = document.getElementById('heroNum');
-    num.className   = pct >= ALRT_PCT ? 'hero-number alert' : pct >= WARN_PCT ? 'hero-number warn' : 'hero-number';
+/* ══════════════════════════════════════════════════
+   METERS & CLOCKS
+══════════════════════════════════════════════════ */
+function fmtTime(ms){
+  const s=Math.floor(ms/1000), m=Math.floor(s/60), h=Math.floor(m/60);
+  return `${String(h).padStart(2,'0')}:${String(m%60).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+}
+function pctStr(elapsed,fillMs){ return Math.round(Math.min(elapsed/fillMs,1)*100)+'%'; }
+
+function updateMeters(){
+  const pe=Date.now()-S.lastPee, pp=Date.now()-S.lastPoop;
+  const peePct=Math.min(pe/PEE_MS,1), poopPct=Math.min(pp/POOP_MS,1);
+
+  /* pee clock */
+  const pc=document.getElementById('peeClockDisp');
+  const ps=document.getElementById('peeClockSub');
+  pc.textContent=fmtTime(pe);
+  pc.className='dig-clock'+(peePct>.7?' warn':peePct>.9?' alert':'');
+  ps.textContent=peePct<.4?'all good 😊':peePct<.75?'getting full…':'⚠️ should pee soon!';
+
+  /* poop clock */
+  const oc=document.getElementById('poopClockDisp');
+  const os=document.getElementById('poopClockSub');
+  oc.textContent=fmtTime(pp);
+  oc.className='dig-clock'+(poopPct>.7?' warn':poopPct>.9?' alert':'');
+  os.textContent=poopPct<.4?'creeper is chill 😊':poopPct<.75?'getting full…':'⚠️ creeper about to explode!';
+
+  /* pee meter */
+  document.getElementById('peeMeterFill').style.width=pctStr(pe,PEE_MS);
+  document.getElementById('peeMeterMsg').textContent=
+    peePct<.4?'You just went! No worries. 😊':peePct<.75?`Getting there… (${Math.round(peePct*100)}%)`:
+    `⚠️ Should pee soon! (${Math.round(peePct*100)}%)`;
+
+  /* poop meter */
+  document.getElementById('poopMeterFill').style.width=pctStr(pp,POOP_MS);
+  document.getElementById('poopMeterMsg').textContent=
+    poopPct<.4?'Creeper is chill. 😊':poopPct<.75?`Getting full… (${Math.round(poopPct*100)}%)`:
+    `⚠️ Creeper about to explode! (${Math.round(poopPct*100)}%)`;
+
+  /* ALERTS */
+  if(poopPct>=.95){ fireAlert('💥 CREEPER EMERGENCY!<br>GET TO THE TOILET NOW!'); }
+  else if(peePct>=.97){ fireAlert('💧 BLADDER FULL!<br>GO PEE RIGHT NOW!'); }
+}
+let alertActive=false;
+function fireAlert(msg){
+  if(alertActive) return;
+  alertActive=true;
+  document.getElementById('alertMsg').innerHTML=msg;
+  document.getElementById('alertOverlay').classList.add('show');
+  playCheckBeep();
+  speak(msg.replace(/<br>/g,' ').replace(/<[^>]+>/g,''));
+}
+function goNow(){
+  document.getElementById('alertOverlay').classList.remove('show');
+  alertActive=false;
+  showScreen('poop');
+}
+
+/* ══════════════════════════════════════════════════
+   COUNTDOWN DISPLAY
+══════════════════════════════════════════════════ */
+let cdEnd = Date.now() + S.checkMs;
+function updateCountdown(){
+  const rem=Math.max(0, cdEnd-Date.now());
+  const m=Math.floor(rem/60_000), s=Math.floor((rem%60_000)/1000);
+  const el=document.getElementById('cdDisplay');
+  el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.className='cd-time'+(rem<5*60_000?' warn':'')+(rem<60_000?' urgent':'');
+}
+
+/* ══════════════════════════════════════════════════
+   CHECK-IN SYSTEM
+══════════════════════════════════════════════════ */
+function scheduleCheck(ms=S.checkMs){
+  if(checkTimer) clearTimeout(checkTimer);
+  cdEnd=Date.now()+ms;
+  checkTimer=setTimeout(fireCheck,ms);
+}
+function fireCheck(){
+  S.checkN++;
+  document.getElementById('ciNum').textContent=S.checkN;
+  document.getElementById('checkIn').classList.add('show');
+  playCheckBeep();
+  speak('Toilet check time! How is Jaxon feeling right now?');
+  if(typeof Notification!=='undefined'&&Notification.permission==='granted'){
+    new Notification('⏰ Toilet Check!',{body:"How is Jaxon feeling? Open the app!",requireInteraction:true});
   }
+  /* animate countdown bar draining to show urgency */
+  let w=100;
+  if(ciCountdown) clearInterval(ciCountdown);
+  document.getElementById('ciFill').style.width='100%';
+  ciCountdown=setInterval(()=>{
+    w=Math.max(0,w-100/300); // drain over ~30s
+    document.getElementById('ciFill').style.width=w+'%';
+    if(w<=0){ clearInterval(ciCountdown); ciCountdown=null; }
+  },100);
+}
+function ciAns(ans){
+  if(ciCountdown){ clearInterval(ciCountdown); ciCountdown=null; }
+  document.getElementById('checkIn').classList.remove('show');
+  if(ans==='pee'){  showScreen('go-pee');  scheduleCheck(); }
+  else if(ans==='poop'){ showScreen('go-poop'); scheduleCheck(); }
+  else if(ans==='maybe'){ scheduleCheck(10*60_000); speak('OK! Checking again in 10 minutes.'); }
+  else { scheduleCheck(); speak('All good! See you in '+Math.round(S.checkMs/60_000)+' minutes.'); }
+}
 
-  function updateDisplay() {
-    const today  = getTodayN();
-    const streak = calcStreak();
-    const best   = updateBestStreak(streak);
-
-    document.getElementById('diamondCount').textContent = gems;
-    document.getElementById('todayCount').textContent   = today;
-    document.getElementById('heroNum').textContent      = totalTrips;
-    document.getElementById('statToday').textContent    = today;
-    document.getElementById('statStreak').textContent   = streak;
-    document.getElementById('statBest').textContent     = best;
-    document.getElementById('statGems').textContent     = gems;
-    updateHeroSub();
+/* ══════════════════════════════════════════════════
+   MARK TRIP
+══════════════════════════════════════════════════ */
+function markTrip(type){
+  if(type==='pee'){
+    S.lastPee=Date.now(); save('jx_lastPee',S.lastPee);
+    S.totalPee++; save('jx_pee',S.totalPee);
+    S.gems++; save('jx_gems',S.gems);
+    incToday('pee');
+  } else {
+    S.lastPoop=Date.now(); save('jx_lastPoop',S.lastPoop);
+    S.totalPoop++; save('jx_poop',S.totalPoop);
+    S.gems+=2; save('jx_gems',S.gems);  // poop = 2 diamonds (harder!)
+    incToday('poop');
   }
+  alertActive=false;
+  document.getElementById('alertOverlay').classList.remove('show');
+  S.pendingType=type;
+  scheduleCheck();
+  checkAchievements();
+  launchMath(type);     // show math challenge before celebrate
+}
 
-  /* ──────── METER ──────── */
-  function updateMeter() {
-    const pct = Math.min((Date.now() - lastTime) / FILL_MS, 1);
-    const p100 = Math.round(pct * 100);
+/* ══════════════════════════════════════════════════
+   MATH ENGINE
+══════════════════════════════════════════════════ */
+const PRIMES=[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97];
+let mathTimer=null, mathStart=0;
 
-    document.getElementById('meterFill').style.width = p100 + '%';
+function nextPrime(n){ return PRIMES.find(p=>p>n)||101; }
+function rand(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+function shuffle(a){ return a.sort(()=>Math.random()-.5); }
+function fib(n){ let a=0,b=1; for(let i=2;i<=n;i++){[a,b]=[b,a+b];} return n===0?0:b; }
 
-    const msg = document.getElementById('meterMsg');
-    if (pct < 0.30) {
-      msg.textContent = 'All good! Creeper is chill. 😊';
-      msg.style.color = '';
-    } else if (pct < WARN_PCT) {
-      msg.textContent = `Getting there… maybe try going soon? (${p100}%)`;
-      msg.style.color = '#b37a00';
-    } else if (pct < ALRT_PCT) {
-      msg.textContent = `⚠️ Should try to poop soon! (${p100}%)`;
-      msg.style.color = '#cc4400';
-    } else {
-      msg.textContent = `🚨 CREEPER ABOUT TO EXPLODE! GO NOW! (${p100}%)`;
-      msg.style.color = '#e03030';
-      if (!alertDone) { alertDone = true; document.getElementById('alertOverlay').classList.add('show'); }
+function genQuestion(level=3){
+  const ops=[
+    ()=>{ const a=rand(8,20),b=rand(7,15),ans=a*b; const w=[ans-rand(2,8),ans+rand(3,7),ans-b,ans+a].filter(x=>x>0&&x!==ans); return {q:`${a} × ${b} = ?`,a:ans,w}; },
+    ()=>{ const i=rand(3,15),p=PRIMES[i],ans=nextPrime(p); const w=[ans+2,p-2,ans+6,ans-4].filter(x=>x>0&&x!==ans&&x!==p); return {q:`Next prime after ${p}?`,a:ans,w}; },
+    ()=>{ const b=rand(2,6),ans=b*b; const w=[ans+b,ans-b,ans+1,ans-1].filter(x=>x>0&&x!==ans); return {q:`${b}² = ?`,a:ans,w}; },
+    ()=>{ const a=rand(2,6),b=rand(1,4),c=rand(5,30),ans=(c-b)/a; if(!Number.isInteger(ans)||ans<1) return genQuestion(level); const w=[ans+2,ans-1,ans+3,c-a].filter(x=>x>0&&x!==ans); return {q:`${a}x + ${b} = ${c}\nFind x`,a:ans,w}; },
+    ()=>{ const n=rand(6,11),ans=fib(n); const prev=fib(n-1); const w=[ans+2,ans-1,ans+fib(n-2),prev].filter(x=>x>0&&x!==ans); return {q:`Fibonacci:\n1,1,2,3,5,8…\nWhat is F(${n})?`,a:ans,w}; },
+    ()=>{ const a=rand(2,7),b=rand(1,5),ans=3*a*a; const w=[ans+a,ans-b,2*a*a,ans+2*b].filter(x=>x>0&&x!==ans); return {q:`f(x) = 3x²\nf(${a}) = ?`,a:ans,w}; },
+    ()=>{ const n=rand(3,7),ans=Array.from({length:n},(_,i)=>i+1).reduce((a,b)=>a*b,1); const w=[ans-rand(1,3),ans+rand(1,5),ans-1,ans*2].filter(x=>x>0&&x!==ans); return {q:`${n}! (factorial) = ?`,a:ans,w}; },
+  ];
+  const pick=level<=1?ops.slice(0,2):level===2?ops.slice(0,4):ops;
+  let q; do{ q=pick[rand(0,pick.length-1)](); } while(!q);
+  return q;
+}
+
+function launchMath(type){
+  S.pendingType=type;
+  const lvl=S.mathLevel;
+  const q=genQuestion(lvl);
+  document.getElementById('mathHeader').textContent=(type==='poop'?'💩 POOP BONUS! +3 EXTRA DIAMONDS!':'💧 PEE BONUS! +1 EXTRA DIAMOND!');
+  document.getElementById('mathSub').textContent='Answer correctly for bonus gems! Faster = more stars!';
+  document.getElementById('mathQ').textContent=q.q;
+  document.getElementById('mathTimerFill').style.width='100%';
+  ['star1','star2','star3'].forEach(id=>{ document.getElementById(id).classList.remove('lit'); });
+
+  const all=shuffle([q.a,...q.w.slice(0,3)]);
+  const box=document.getElementById('mathChoices');
+  box.innerHTML='';
+  all.forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='math-choice'; btn.textContent=opt;
+    btn.onclick=()=>answerMath(opt===q.a,btn,q.a,type);
+    box.appendChild(btn);
+  });
+
+  mathStart=Date.now();
+  if(mathTimer) clearInterval(mathTimer);
+  const dur=18000;
+  mathTimer=setInterval(()=>{
+    const elapsed=Date.now()-mathStart;
+    const pct=Math.max(0,1-elapsed/dur)*100;
+    document.getElementById('mathTimerFill').style.width=pct+'%';
+    if(pct<=0){ clearInterval(mathTimer); skipMath(); }
+  },100);
+
+  speak(q.q.replace(/\n/g,' '));
+  showScreen('math');
+}
+
+function launchMathPractice(){
+  S.pendingType='practice';
+  launchMath('practice');
+}
+
+function answerMath(correct, btn, correctAns, type){
+  if(mathTimer){ clearInterval(mathTimer); mathTimer=null; }
+  const elapsed=(Date.now()-mathStart)/1000;
+
+  /* highlight */
+  [...document.querySelectorAll('.math-choice')].forEach(b=>{
+    b.disabled=true;
+    if(+b.textContent===correctAns) b.classList.add('correct');
+  });
+  if(!correct) btn.classList.add('wrong');
+
+  if(correct){
+    playSuccess();
+    const stars=elapsed<=5?3:elapsed<=10?2:1;
+    for(let i=1;i<=stars;i++) document.getElementById('star'+i).classList.add('lit');
+    const bonus=type==='poop'?stars*2:stars;
+    S.gems+=bonus; save('jx_gems',S.gems);
+    S.mathCorrect++; save('jx_mathOk',S.mathCorrect);
+    speak(`Correct! You earned ${bonus} bonus diamond${bonus>1?'s':''}!`);
+    setTimeout(()=>showCelebrate(type),1000);
+  } else {
+    playWrong();
+    speak(`Not quite! The answer was ${correctAns}. Keep going!`);
+    setTimeout(()=>showCelebrate(type),1400);
+  }
+}
+
+function skipMath(){
+  if(mathTimer){ clearInterval(mathTimer); mathTimer=null; }
+  if(S.pendingType && S.pendingType!=='practice') showCelebrate(S.pendingType);
+  else showScreen('hub');
+}
+
+/* ══════════════════════════════════════════════════
+   CELEBRATE
+══════════════════════════════════════════════════ */
+function showCelebrate(type){
+  const streak=calcStreak(), best=updateBest(streak);
+  const total=S.totalPee+S.totalPoop;
+  const tripToday=getTodayTotal();
+
+  document.getElementById('celebTitle').textContent = type==='poop'?'💩 POOP SUCCESS! CREEPER SAVED! 🎉':'💧 PEE SUCCESS! WELL DONE! 🎉';
+  document.getElementById('celebGems').textContent  = S.gems;
+  document.getElementById('cTripNum').textContent   = tripToday;
+  document.getElementById('cTotal').textContent     = total;
+  document.getElementById('cStreak').textContent    = streak;
+  document.getElementById('cBest').textContent      = best;
+
+  const facts=[
+    `${total} trips × 1 = ${total} total trips! 🧮`,
+    `Trip ${total}! Is ${total} prime? ${PRIMES.includes(total)?'YES! 🔢':'No — factors: '+Array.from({length:total},(_,i)=>i+1).filter(i=>i>1&&i<total&&total%i===0).join(', ')||'just 1 and itself'}`,
+    streak>1?`${streak} days in a row! ${streak} is ${PRIMES.includes(streak)?'a prime number':'a composite number'}! 🔥`:'New streak! Keep it going tomorrow! 🔥',
+    `You have ${S.gems} 💎. Next square number after ${S.gems}: ${Array.from({length:200},(_,i)=>(i+1)**2).find(x=>x>S.gems)}!`,
+    `Total: ${total}. Fibonacci sequence includes ${[...Array(20)].reduce((a,_,i)=>i<2?[...a,i]:[...a,a[i-1]+a[i-2]],[]).filter(f=>f>0&&f<=total+10).join(', ')}`,
+  ];
+  document.getElementById('celebMath').textContent = facts[total%facts.length];
+
+  playSuccess();
+  speak(type==='poop'?'Amazing! You pooped in the toilet! Creeper saved!':'Great job! You peed in the toilet!');
+  showScreen('celebrate');
+  spawnRain(type);
+  updateDisplay();
+}
+
+function spawnRain(type){
+  const rain=document.getElementById('celebRain');
+  rain.innerHTML='';
+  const items=type==='poop'?['💩','💎','🌟','💥','✨']:['💧','💎','✨','⭐','🌟'];
+  for(let i=0;i<28;i++){
+    const el=document.createElement('span');
+    el.className='cp';
+    el.textContent=items[i%items.length];
+    el.style.left             =Math.random()*92+'%';
+    el.style.fontSize         =(12+Math.random()*22)+'px';
+    el.style.animationDuration=(0.5+Math.random()*1.5)+'s';
+    el.style.animationDelay   =(Math.random()*2)+'s';
+    rain.appendChild(el);
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   ACHIEVEMENTS
+══════════════════════════════════════════════════ */
+const ACHIEVEMENTS=[
+  {id:'first',  icon:'🏅', name:'First Trip!',         check:()=>S.totalPee+S.totalPoop>=1},
+  {id:'ten',    icon:'🔟', name:'10 Total Trips!',      check:()=>S.totalPee+S.totalPoop>=10},
+  {id:'fifty',  icon:'5️⃣0️⃣',name:'50 Total Trips!',      check:()=>S.totalPee+S.totalPoop>=50},
+  {id:'poop5',  icon:'💩', name:'5 Poop Trips!',        check:()=>S.totalPoop>=5},
+  {id:'poop20', icon:'💩', name:'20 Poop Trips!',       check:()=>S.totalPoop>=20},
+  {id:'streak3',icon:'🔥', name:'3-Day Streak!',        check:()=>calcStreak()>=3},
+  {id:'streak7',icon:'🔥', name:'7-Day Streak!',        check:()=>calcStreak()>=7},
+  {id:'math10', icon:'🧮', name:'10 Math Answers!',     check:()=>S.mathCorrect>=10},
+  {id:'gems50', icon:'💎', name:'50 Diamonds Earned!',  check:()=>S.gems>=50},
+];
+function checkAchievements(){
+  ACHIEVEMENTS.forEach(a=>{
+    if(!localStorage.getItem('jx_ach_'+a.id) && a.check()){
+      localStorage.setItem('jx_ach_'+a.id,'1');
+      showAchievement(a);
     }
-    updateHeroSub();
+  });
+}
+let achQueue=[], achShowing=false;
+function showAchievement(a){
+  achQueue.push(a);
+  if(!achShowing) nextAch();
+}
+function nextAch(){
+  if(!achQueue.length){ achShowing=false; return; }
+  achShowing=true;
+  const a=achQueue.shift();
+  document.getElementById('atIcon').textContent=a.icon;
+  document.getElementById('atName').textContent=a.name;
+  const toast=document.getElementById('achieveToast');
+  toast.classList.add('show');
+  speak('Achievement unlocked! '+a.name);
+  setTimeout(()=>{ toast.classList.remove('show'); setTimeout(nextAch,500); },3000);
+}
+
+/* ══════════════════════════════════════════════════
+   BUS
+══════════════════════════════════════════════════ */
+function busYes()   { markTrip('poop'); }
+function busDidGo() { markTrip('poop'); }
+
+/* ══════════════════════════════════════════════════
+   STATS GRAPH
+══════════════════════════════════════════════════ */
+function drawGraph(){
+  const canvas=document.getElementById('graphCanvas');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.offsetWidth; canvas.width=W; canvas.height=160;
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const now=new Date();
+  const data=Array.from({length:7},(_,i)=>{
+    const d=new Date(now); d.setDate(d.getDate()-6+i);
+    return { label:days[d.getDay()], pee:+localStorage.getItem(dayKey('pee',d))||0, poop:+localStorage.getItem(dayKey('poop',d))||0 };
+  });
+  const maxVal=Math.max(...data.map(d=>d.pee+d.poop),4);
+  const padL=28,padR=8,padT=14,padB=30;
+  const gW=W-padL-padR, gH=160-padT-padB;
+  ctx.clearRect(0,0,W,160);
+  /* grid lines */
+  ctx.strokeStyle='rgba(22,75,69,.12)'; ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=padT+gH-(i/4)*gH;
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(padL+gW,y); ctx.stroke();
+    ctx.fillStyle='rgba(22,75,69,.5)'; ctx.font='8px Nunito';
+    ctx.fillText(Math.round(maxVal*i/4),2,y+3);
   }
+  /* bars */
+  const bW=Math.floor(gW/7*.55), gap=gW/7;
+  data.forEach((d,i)=>{
+    const x=padL+i*gap+(gap-bW)/2;
+    const peH=d.pee?Math.max(4,(d.pee/maxVal)*gH):0;
+    const poH=d.poop?Math.max(4,(d.poop/maxVal)*gH):0;
+    const hw=Math.floor(bW/2)-1;
+    /* pee */
+    ctx.fillStyle='#f5c800';
+    ctx.fillRect(x,padT+gH-peH,hw,peH);
+    /* poop */
+    ctx.fillStyle='#8B5E3C';
+    ctx.fillRect(x+hw+1,padT+gH-poH,hw,poH);
+    /* label */
+    ctx.fillStyle='rgba(22,75,69,.7)'; ctx.font='bold 9px Nunito'; ctx.textAlign='center';
+    ctx.fillText(d.label,x+bW/2,padT+gH+14);
+  });
+  ctx.textAlign='left';
+  /* stats update */
+  const streak=calcStreak(), best=updateBest(streak);
+  document.getElementById('recTotalPee').textContent  = S.totalPee;
+  document.getElementById('recTotalPoop').textContent = S.totalPoop;
+  document.getElementById('recStreak').textContent    = streak;
+  document.getElementById('recBest').textContent      = best;
+  document.getElementById('recThisWeek').textContent  = getWeekTotal();
+  document.getElementById('recAvg').textContent       = getDailyAvg();
+}
 
-  /* ──────── SCREENS ──────── */
-  function showScreen(name) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-' + name).classList.add('active');
-    window.scrollTo(0, 0);
-  }
-  function goNow() {
-    document.getElementById('alertOverlay').classList.remove('show');
-    showScreen('go');
-  }
+/* ══════════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════════ */
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  window.scrollTo(0,0);
+  if(name==='stats') drawGraph();
+}
 
-  /* ──────── MARK WENT ──────── */
-  function markWent() {
-    lastTime = Date.now();
-    localStorage.setItem('jx_last', String(lastTime));
-    gems++;        localStorage.setItem('jx_gems',  String(gems));
-    totalTrips++;  localStorage.setItem('jx_total', String(totalTrips));
+/* ══════════════════════════════════════════════════
+   DISPLAY UPDATE
+══════════════════════════════════════════════════ */
+function updateDisplay(){
+  const streak=calcStreak(), best=updateBest(streak), today=getTodayTotal();
+  document.getElementById('hubGems').textContent      = S.gems;
+  document.getElementById('hubGems2').textContent     = S.gems;
+  document.getElementById('hubTotalPee').textContent  = S.totalPee;
+  document.getElementById('hubTotalPoop').textContent = S.totalPoop;
+  document.getElementById('hubToday').textContent     = today;
+  document.getElementById('hubStreak').textContent    = streak;
+  document.getElementById('hubBest').textContent      = best;
+}
 
-    const tripToday = incToday();
-    const streak    = calcStreak();
-    const best      = updateBestStreak(streak);
-
-    alertDone = false;
-    document.getElementById('alertOverlay').classList.remove('show');
-
-    /* populate celebrate screen */
-    document.getElementById('celebGems').textContent    = gems;
-    document.getElementById('celebTripNum').textContent = tripToday;
-    document.getElementById('celebTotal').textContent   = totalTrips;
-    document.getElementById('celebStreak').textContent  = streak;
-    document.getElementById('celebBest').textContent    = best;
-
-    /* fun math fact */
-    const mathFacts = [
-      `${totalTrips} trips × 1 💎 = ${totalTrips} diamonds total!`,
-      `Trip ${totalTrips}! That's ${totalTrips % 2 === 0 ? 'an even' : 'an odd'} number! 🧠`,
-      streak > 1 ? `${streak} days in a row — that's a ${streak}-day streak! 🔥` : 'New streak started — keep it going! 🔥',
-      `You've earned ${gems} diamonds. ${gems} ÷ ${Math.max(1,Math.floor(gems/5))} = ${Math.round(gems/Math.max(1,Math.floor(gems/5)))}! 🧮`,
-      `Total trips: ${totalTrips}. Next milestone: ${Math.ceil(totalTrips/10)*10}! 🎯`,
-    ];
-    document.getElementById('celebMath').textContent = mathFacts[totalTrips % mathFacts.length];
-
-    updateDisplay();
-    updateMeter();
-    showScreen('celebrate');
-    spawnRain();
-  }
-
-  function busYes()   { markWent(); }
-  function busDidGo() { markWent(); }
-
-  /* ──────── CELEBRATION RAIN ──────── */
-  function spawnRain() {
-    const rain = document.getElementById('celebRain');
-    rain.innerHTML = '';
-    const items = ['💎','💩','🌟','💥','✨'];
-    for (let i = 0; i < 24; i++) {
-      const el = document.createElement('span');
-      el.className   = 'cp';
-      el.textContent = items[i % items.length];
-      el.style.left             = Math.random() * 92 + '%';
-      el.style.fontSize         = (14 + Math.random() * 22) + 'px';
-      el.style.animationDuration = (0.6 + Math.random() * 1.5) + 's';
-      el.style.animationDelay   = (Math.random() * 1.8) + 's';
-      rain.appendChild(el);
+/* ══════════════════════════════════════════════════
+   SETTINGS
+══════════════════════════════════════════════════ */
+function saveInterval(){
+  const v=+document.getElementById('intervalSel').value;
+  S.checkMs=v*60_000; save('jx_interval',v);
+  scheduleCheck();
+}
+function saveMathLevel(){
+  S.mathLevel=+document.getElementById('mathLevelSel').value;
+  save('jx_mathLv',S.mathLevel);
+}
+function confirmReset(){
+  if(confirm('Reset ALL stats? This cannot be undone!')){
+    ['jx_gems','jx_pee','jx_poop','jx_lastPee','jx_lastPoop','jx_best','jx_mathOk']
+      .forEach(k=>localStorage.removeItem(k));
+    ACHIEVEMENTS.forEach(a=>localStorage.removeItem('jx_ach_'+a.id));
+    // clear day keys (last 90 days)
+    const now=new Date();
+    for(let i=0;i<90;i++){
+      const d=new Date(now); d.setDate(d.getDate()-i);
+      ['pee','poop'].forEach(t=>localStorage.removeItem(dayKey(t,d)));
     }
+    location.reload();
   }
+}
 
-  /* ──────── AUDIO + 30-MIN CHECK-IN ──────── */
-  let audioCtx      = null;
-  let checkCount    = 0;
-  let checkTimer    = null;
-  const CHECK_MS    = 30 * 60 * 1000; // 30 minutes
-  const SNOOZE_MS   = 10 * 60 * 1000; // 10-min snooze for "maybe"
+/* ══════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════ */
+function init(){
+  /* restore settings */
+  const ivEl=document.getElementById('intervalSel');
+  ivEl.value=String(Math.round(S.checkMs/60_000));
+  document.getElementById('mathLevelSel').value=String(S.mathLevel);
 
-  /* Unlock audio on first touch — browsers block autoplay until user interacts */
-  function unlockAudio() {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-  }
-  document.addEventListener('touchstart', unlockAudio, { once: false, passive: true });
-  document.addEventListener('click',      unlockAudio, { once: false, passive: true });
+  updateDisplay();
+  updateVoiceUI();
+  updateMeters();
+  setInterval(updateMeters,   5_000);
+  setInterval(updateCountdown,1_000);
+  scheduleCheck();
 
-  function playBeep() {
-    unlockAudio();
-    if (!audioCtx) return;
-    /* Three rising beeps — friendly alarm tone */
-    const notes = [523, 659, 784]; // C5 E5 G5
-    notes.forEach((freq, i) => {
-      const osc  = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.type = 'square';
-      osc.frequency.value = freq;
-      const t = audioCtx.currentTime + i * 0.22;
-      gain.gain.setValueAtTime(0, t);
-      gain.gain.linearRampToValueAtTime(0.28, t + 0.04);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
-      osc.start(t);
-      osc.stop(t + 0.22);
-    });
-    /* Repeat the beep sequence twice for emphasis */
-    setTimeout(() => {
-      if (!audioCtx) return;
-      notes.forEach((freq, i) => {
-        const osc  = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.type = 'square';
-        osc.frequency.value = freq;
-        const t = audioCtx.currentTime + i * 0.22;
-        gain.gain.setValueAtTime(0, t);
-        gain.gain.linearRampToValueAtTime(0.28, t + 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
-        osc.start(t);
-        osc.stop(t + 0.22);
-      });
-    }, 800);
-  }
+  /* QR */
+  new QRCode(document.getElementById('qrcode'),{
+    text:'https://dacameragirl.github.io/Jaxons_Potty_Time/',
+    width:220,height:220,colorDark:'#102c2f',colorLight:'#ffffff',
+    correctLevel:QRCode.CorrectLevel.H
+  });
 
-  function scheduleCheck(ms = CHECK_MS) {
-    if (checkTimer) clearTimeout(checkTimer);
-    checkTimer = setTimeout(fireCheck, ms);
-  }
+  /* notification permission */
+  if(typeof Notification!=='undefined'&&Notification.permission==='default')
+    Notification.requestPermission();
 
-  function fireCheck() {
-    checkCount++;
-    document.getElementById('ciCount').textContent = checkCount;
-    document.getElementById('ciNext').textContent  = 'Next check in 30 minutes';
-    document.getElementById('checkIn').classList.add('show');
-    playBeep();
-    /* Also fire a Web Notification if permitted (works when tab is backgrounded on Android) */
-    if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-      new Notification('⏰ Poop Check Time!', {
-        body: "How is Jaxon's tummy feeling right now?",
-        icon: 'https://dacameragirl.github.io/Jaxons_Potty_Time/favicon.ico',
-        requireInteraction: true
-      });
-    }
-  }
+  /* load voices async */
+  if('speechSynthesis' in window)
+    window.speechSynthesis.onvoiceschanged=()=>{};
 
-  function ciAnswer(ans) {
-    document.getElementById('checkIn').classList.remove('show');
-    if (ans === 'need') {
-      showScreen('go');
-      scheduleCheck();
-    } else if (ans === 'maybe') {
-      /* Snooze 10 minutes and remind again */
-      document.getElementById('ciNext').textContent = 'Checking again in 10 minutes!';
-      scheduleCheck(SNOOZE_MS);
-    } else {
-      /* All good — back to normal 30-min cycle */
-      scheduleCheck();
-    }
-  }
+  speak("Welcome to Jaxon's Toilet Lab! Genius plus mode activated!");
+}
 
-  function requestNotifPermission() {
-    if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
-  }
-
-  init();
-  scheduleCheck();          // start the 30-min cycle
-  requestNotifPermission(); // ask once, quietly
+init();
 </script>
 </body>
 </html>

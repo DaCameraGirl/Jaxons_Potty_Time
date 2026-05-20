@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Toilet Mission">
+  <meta name="apple-mobile-web-app-title" content="Jaxon's Mission">
   <link rel="manifest" href="manifest.json">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,323 +13,228 @@
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@700;900;1000&display=swap" rel="stylesheet">
   <title>Jaxon's Toilet Mission</title>
   <style>
-    :root {
-      --bg:    #03080f;
-      --neon:  #00d4ff;
-      --neon2: #a855f7;
-      --grn:   #00ff88;
-      --gold:  #ffd000;
-      --red:   #ff3b30;
-      --pee:   #ffd000;
-      --poop:  #c87941;
-      --dkpoop:#7a4a20;
-      --panel: rgba(0,18,50,0.82);
-      --panel2:rgba(0,28,70,0.7);
-      --bdr:   rgba(0,212,255,0.28);
-      --bdr2:  rgba(168,85,247,0.28);
-      --glow:  rgba(0,212,255,0.14);
-      --stone: #6b8aac;
-      --text:  #ddeeff;
+    :root{
+      --bg:#03080f; --neon:#00d4ff; --neon2:#a855f7;
+      --grn:#00ff88; --gold:#ffd000; --red:#ff3b30;
+      --pee:#ffd000; --poop:#c87941;
+      --panel:rgba(0,18,50,0.85); --panel2:rgba(0,28,70,0.7);
+      --bdr:rgba(0,212,255,0.28); --bdr2:rgba(168,85,247,0.28);
+      --glow:rgba(0,212,255,0.14); --stone:#6b8aac; --text:#ddeeff;
     }
-    *{ box-sizing:border-box; margin:0; padding:0;
-       -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
-    html,body{ min-height:100vh; }
-    body{
-      font-family:"Nunito",Verdana,sans-serif;
-      background:var(--bg);
-      color:var(--text);
-      overflow-x:hidden;
-    }
-    #bgCanvas{ position:fixed; inset:0; z-index:0; pointer-events:none; }
-    #cursorTrail{ position:fixed; inset:0; z-index:2; pointer-events:none; }
-    /* floating space objects */
-    .space-world{ position:fixed; inset:0; z-index:1; overflow:hidden; pointer-events:none; }
-    .sobj{ position:absolute; font-size:46px; animation:sobjFloat 7s ease-in-out infinite; opacity:.55; }
-    @keyframes sobjFloat{ 0%,100%{transform:translateY(0) rotate(var(--r,0deg))} 50%{transform:translateY(-16px) rotate(var(--r,0deg))} }
-    .sa{left:4vw;  top:9%;  --r:10deg;  animation-delay:0s;   animation-duration:6.2s;}
-    .sb{left:82vw; top:5%;  --r:-8deg;  animation-delay:1.6s; animation-duration:7.4s;}
-    .sc{left:56vw; top:18%; --r:14deg;  animation-delay:0.8s; animation-duration:5.6s;}
-    .sd{left:22vw; top:27%; --r:-12deg; animation-delay:2.2s; animation-duration:8s;}
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+    html,body{min-height:100vh;}
+    body{font-family:"Nunito",Verdana,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;}
+    #bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+    #cursorTrail{position:fixed;inset:0;z-index:2;pointer-events:none;}
+    .space-world{position:fixed;inset:0;z-index:1;overflow:hidden;pointer-events:none;}
+    .sobj{position:absolute;font-size:44px;animation:sobjFloat 7s ease-in-out infinite;opacity:.45;}
+    @keyframes sobjFloat{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-18px) rotate(var(--r,0deg))}}
+    .sa{left:3vw;top:8%;--r:10deg;animation-delay:0s;animation-duration:6.2s;}
+    .sb{left:83vw;top:4%;--r:-8deg;animation-delay:1.6s;animation-duration:7.4s;}
+    .sc{left:57vw;top:17%;--r:14deg;animation-delay:.8s;animation-duration:5.6s;}
+    .sd{left:20vw;top:29%;--r:-12deg;animation-delay:2.2s;animation-duration:8s;}
+
     /* ── SCREENS ── */
-    .screen{ display:none; min-height:100vh; flex-direction:column; align-items:center;
-             position:relative; z-index:3; padding-bottom:50px; }
-    .screen.active{ display:flex; }
+    .screen{display:none;min-height:100vh;flex-direction:column;align-items:center;position:relative;z-index:3;padding-bottom:50px;}
+    .screen.active{display:flex;}
+
     /* ── TOPBAR ── */
-    .topbar{
-      width:100%; background:rgba(0,10,28,0.9);
-      border-bottom:1.5px solid var(--bdr);
-      padding:11px 16px; display:flex; justify-content:space-between; align-items:center;
-      flex-shrink:0; position:sticky; top:0; z-index:10; gap:8px;
-      backdrop-filter:blur(12px);
-    }
-    .tb-gem{ color:var(--neon); font-family:"Baloo 2"; font-size:13px; font-weight:800;
-             display:flex; gap:5px; align-items:center;
-             text-shadow:0 0 10px var(--neon); }
-    .tb-mid{ color:var(--neon); font-family:"Baloo 2"; font-size:11px; font-weight:800;
-             letter-spacing:1px; text-shadow:0 0 8px var(--neon); }
-    .tb-right{ display:flex; gap:6px; align-items:center; }
-    .tb-pill{ font-family:"Nunito"; font-size:10px; font-weight:900;
-              background:rgba(0,212,255,.1); color:var(--neon);
-              border:1.5px solid var(--bdr); padding:4px 10px;
-              border-radius:20px; cursor:pointer; }
-    .tb-pill:active{ background:rgba(0,212,255,.22); }
-    /* ── BRAND ── */
-    .brand{ text-align:center; padding:18px 16px 6px; width:100%; }
-    .eyebrow{ font-family:"Nunito"; font-size:10px; font-weight:700;
-              color:var(--neon); letter-spacing:3px; text-transform:uppercase;
-              text-shadow:0 0 8px var(--neon); }
-    .brand h1{ font-family:"Baloo 2"; font-weight:800; line-height:1.1; }
-    .brand h1 span:first-child{ font-size:clamp(20px,5.5vw,28px); display:block; color:var(--text); }
-    .brand h1 span:last-child{ font-size:clamp(24px,6.5vw,34px); display:block;
-                                 color:var(--neon); text-shadow:0 0 16px var(--neon); }
-    .badge{ display:inline-block; margin-top:5px;
-            background:linear-gradient(135deg,var(--neon2),var(--neon));
-            color:#fff; font-family:"Nunito"; font-size:10px; font-weight:900;
-            padding:4px 14px; border-radius:20px; letter-spacing:.5px;
-            box-shadow:0 0 14px rgba(0,212,255,.35); }
-    /* ── GLASS PANELS ── */
-    .card{
-      width:92%; max-width:400px;
-      background:var(--panel); border:1.5px solid var(--bdr);
-      border-radius:16px; box-shadow:0 0 22px var(--glow), 0 4px 20px rgba(0,0,0,.6);
-      padding:16px 14px; margin:8px auto;
-    }
-    .card-title{ font-family:"Nunito"; font-size:10px; font-weight:700;
-                 color:var(--neon); letter-spacing:1.5px; text-transform:uppercase;
-                 margin-bottom:8px; text-align:center; text-shadow:0 0 8px var(--neon); }
-    /* ── HERO TILES ── */
-    .hero-row{ display:flex; gap:10px; width:92%; max-width:400px; margin:8px auto; }
-    .hero-tile{
-      flex:1; background:var(--panel); border:1.5px solid var(--bdr);
-      border-radius:14px; box-shadow:0 0 18px var(--glow), 0 3px 12px rgba(0,0,0,.5);
-      padding:14px 8px; text-align:center;
-    }
-    .hero-n{ font-family:"Baloo 2"; font-weight:800;
-             font-size:clamp(38px,10vw,52px); line-height:1; }
-    .hero-n.pee-col { color:var(--pee);  text-shadow:0 0 18px var(--pee); }
-    .hero-n.poop-col{ color:var(--poop); text-shadow:0 0 14px var(--poop); }
-    .hero-lbl{ font-family:"Nunito"; font-size:9px; font-weight:700;
-               color:var(--stone); margin-top:3px; text-transform:uppercase; letter-spacing:.5px; }
-    /* ── MINI STATS ── */
-    .stat-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px;
-               width:92%; max-width:400px; margin:0 auto 8px; }
-    .stat-tile{ background:var(--panel); border:1.5px solid var(--bdr);
-                border-radius:12px; box-shadow:0 0 14px var(--glow); padding:9px 4px; text-align:center; }
-    .stat-n{ font-family:"Baloo 2"; font-weight:800;
-             font-size:clamp(20px,4.5vw,26px); line-height:1; }
-    .stat-n.gc{ color:var(--gold); text-shadow:0 0 10px var(--gold); }
-    .stat-n.lc{ color:var(--grn);  text-shadow:0 0 10px var(--grn); }
-    .stat-n.tc{ color:var(--neon); text-shadow:0 0 10px var(--neon); }
-    .stat-n.dc{ color:var(--neon2);text-shadow:0 0 10px var(--neon2); }
-    .stat-l{ font-family:"Nunito"; font-size:7px; font-weight:700; color:var(--stone);
-             margin-top:3px; text-transform:uppercase; letter-spacing:.4px; line-height:1.3; }
-    /* ── MISSION TIMER ── */
-    .mission-band{
-      width:92%; max-width:400px; margin:0 auto 8px;
-      background:rgba(0,10,30,0.8); border:1.5px solid var(--bdr);
-      border-radius:12px; padding:10px 16px;
-      display:flex; align-items:center; justify-content:space-between;
-      box-shadow:0 0 18px var(--glow);
-    }
-    .cd-label{ font-family:"Nunito"; font-size:9px; font-weight:700;
-               color:var(--neon); letter-spacing:1px; text-transform:uppercase;
-               text-shadow:0 0 8px var(--neon); }
-    .cd-time{ font-family:"Baloo 2"; font-weight:800; font-size:22px;
-              color:var(--grn); letter-spacing:2px; text-shadow:0 0 14px var(--grn); }
-    .cd-time.warn  { color:var(--gold); text-shadow:0 0 14px var(--gold); }
-    .cd-time.urgent{ color:var(--red);  text-shadow:0 0 14px var(--red); animation:pulse .5s infinite alternate; }
-    @keyframes pulse{ from{transform:scale(1)} to{transform:scale(1.05)} }
-    /* ── HUB GRID ── */
-    .hub-grid{ width:92%; max-width:400px; display:grid; grid-template-columns:1fr 1fr;
-               gap:12px; margin:8px auto; }
-    .hub-btn{
-      font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer;
-      border-radius:14px; padding:18px 10px 14px; font-size:clamp(12px,3.2vw,14px);
-      display:flex; flex-direction:column; align-items:center; gap:6px;
-      transition:transform .1s, box-shadow .1s; -webkit-user-select:none; user-select:none;
-      line-height:1.3; border:1.5px solid transparent;
-    }
-    .hub-btn:active{ transform:translateY(3px) scale(.97); }
-    .hub-btn-em{ font-size:32px; line-height:1; }
-    .hb-pee  { background:linear-gradient(160deg,#ffe566,#d4a000); color:#1a0d00; border-color:rgba(255,208,0,.4); box-shadow:0 0 18px rgba(255,208,0,.25); }
-    .hb-poop { background:linear-gradient(160deg,#c87941,#7a4a20); color:#fff; border-color:rgba(200,121,65,.4); box-shadow:0 0 14px rgba(200,121,65,.2); }
-    .hb-stats{ background:linear-gradient(160deg,#0099cc,#004488); color:#fff; border-color:var(--bdr); box-shadow:0 0 18px rgba(0,212,255,.2); }
-    .hb-math { background:linear-gradient(160deg,#9944ff,#5500aa); color:#fff; border-color:var(--bdr2); box-shadow:0 0 18px rgba(168,85,247,.25); }
-    .hb-bus  { background:linear-gradient(160deg,#ff7722,#cc3300); color:#fff; border-color:rgba(255,119,34,.4); box-shadow:0 0 14px rgba(255,100,0,.2); }
-    .hb-qr   { background:linear-gradient(160deg,#1a3a5c,#0a1e3a); color:var(--neon); border-color:var(--bdr); box-shadow:0 0 14px var(--glow); }
-    /* ── VOICE TOGGLE ── */
-    .voice-bar{ width:92%; max-width:400px; margin:4px auto;
-                background:rgba(0,10,30,.7); border:1.5px solid var(--bdr);
-                border-radius:10px; padding:8px 14px;
-                display:flex; align-items:center; justify-content:space-between; }
-    .voice-lbl{ font-family:"Nunito"; font-size:10px; font-weight:700; color:var(--stone); }
-    .voice-toggle{ font-family:"Nunito"; font-size:10px; font-weight:900;
-                   background:var(--grn); color:#001a10; border:none; cursor:pointer;
-                   padding:6px 14px; border-radius:8px; }
-    .voice-toggle.muted{ background:var(--stone); color:#fff; }
+    .topbar{width:100%;background:rgba(0,10,28,.93);border-bottom:1.5px solid var(--bdr);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;position:sticky;top:0;z-index:10;backdrop-filter:blur(14px);}
+    .tb-gem{color:var(--gold);font-family:"Baloo 2";font-size:16px;font-weight:800;display:flex;gap:5px;align-items:center;text-shadow:0 0 12px var(--gold);}
+    .tb-mid{color:var(--neon);font-family:"Baloo 2";font-size:12px;font-weight:800;letter-spacing:1px;text-shadow:0 0 8px var(--neon);}
+    .tb-right{display:flex;gap:6px;align-items:center;}
+    .tb-pill{font-family:"Nunito";font-size:14px;font-weight:900;background:rgba(0,212,255,.1);color:var(--neon);border:1.5px solid var(--bdr);padding:5px 12px;border-radius:20px;cursor:pointer;}
+    .tb-pill:active{background:rgba(0,212,255,.25);}
+    .btn-back{font-family:"Nunito";font-size:12px;font-weight:900;background:rgba(0,212,255,.1);color:var(--neon);border:1.5px solid var(--bdr);border-radius:8px;padding:7px 14px;cursor:pointer;}
+
+    /* ── HUB HERO ── */
+    .hub-hero{width:92%;max-width:420px;margin:14px auto 8px;text-align:center;background:var(--panel);border:2px solid var(--bdr);border-radius:22px;padding:18px 16px 14px;box-shadow:0 0 36px var(--glow),0 4px 24px rgba(0,0,0,.55);}
+    .hub-hero-jaxon{font-family:"Nunito";font-size:13px;font-weight:900;color:var(--neon2);letter-spacing:3px;text-transform:uppercase;text-shadow:0 0 10px var(--neon2);margin-bottom:1px;}
+    .hub-hero-label{font-family:"Nunito";font-size:10px;font-weight:700;color:var(--stone);letter-spacing:2px;text-transform:uppercase;margin-bottom:2px;}
+    .hub-hero-n{font-family:"Baloo 2";font-weight:800;font-size:clamp(72px,20vw,96px);line-height:.9;color:var(--neon);text-shadow:0 0 32px var(--neon),0 0 64px rgba(0,212,255,.22);}
+    .hub-hero-sub{font-family:"Nunito";font-size:12px;font-weight:700;color:var(--stone);margin-top:8px;}
+
+    /* ── QUICK ROW ── */
+    .quick-row{width:92%;max-width:420px;margin:0 auto 10px;display:flex;align-items:stretch;background:var(--panel);border:1.5px solid var(--bdr);border-radius:14px;padding:10px 0;box-shadow:0 0 16px var(--glow);}
+    .quick-tile{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:2px 6px;}
+    .quick-icon{font-size:16px;}
+    .quick-n{font-family:"Baloo 2";font-weight:800;font-size:clamp(20px,5vw,26px);line-height:1;color:var(--neon);text-shadow:0 0 10px var(--neon);}
+    .qn-streak{color:var(--grn);text-shadow:0 0 10px var(--grn);}
+    .qn-today{color:var(--neon2);text-shadow:0 0 10px var(--neon2);}
+    .qn-warn{color:var(--gold)!important;text-shadow:0 0 14px var(--gold)!important;}
+    .qn-urgent{color:var(--red)!important;text-shadow:0 0 14px var(--red)!important;animation:pulse .5s infinite alternate;}
+    @keyframes pulse{from{transform:scale(1)}to{transform:scale(1.07)}}
+    .quick-lbl{font-family:"Nunito";font-size:8px;font-weight:700;color:var(--stone);text-transform:uppercase;letter-spacing:.5px;}
+    .quick-div{width:1px;background:var(--bdr);align-self:stretch;margin:4px 0;}
+
+    /* ── MAIN BUTTONS ── */
+    .main-actions{width:92%;max-width:420px;margin:0 auto 10px;display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .main-btn{font-family:"Baloo 2";font-weight:800;border:none;cursor:pointer;border-radius:20px;padding:28px 12px 22px;display:flex;flex-direction:column;align-items:center;gap:8px;transition:transform .12s;-webkit-user-select:none;user-select:none;border:2px solid transparent;}
+    .main-btn:active{transform:scale(.96) translateY(2px);}
+    .main-em{font-size:50px;line-height:1;}
+    .main-txt{font-size:clamp(14px,3.8vw,17px);line-height:1.3;text-align:center;}
+    .main-pee{background:linear-gradient(155deg,#ffe566,#d4a000,#b87800);color:#1a0d00;border-color:rgba(255,208,0,.45);box-shadow:0 0 24px rgba(255,208,0,.28),0 6px 20px rgba(0,0,0,.5);}
+    .main-poop{background:linear-gradient(155deg,#d4874a,#a05e2c,#7a4220);color:#fff;border-color:rgba(200,121,65,.45);box-shadow:0 0 18px rgba(200,121,65,.22),0 6px 20px rgba(0,0,0,.5);}
+
+    /* ── NAV DOCK ── */
+    .nav-dock{width:92%;max-width:420px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+    .dock-btn{font-family:"Nunito";font-weight:900;border:1.5px solid var(--bdr);cursor:pointer;background:var(--panel);color:var(--neon);border-radius:14px;padding:10px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9px;text-transform:uppercase;letter-spacing:.4px;box-shadow:0 0 10px var(--glow);transition:background .1s,transform .1s;}
+    .dock-btn span:first-child{font-size:22px;}
+    .dock-btn:active{background:rgba(0,212,255,.18);transform:scale(.96);}
+
+    /* ── VOICE BAR ── */
+    .voice-bar{width:92%;max-width:420px;margin:8px auto 0;background:rgba(0,10,30,.6);border:1.5px solid var(--bdr);border-radius:10px;padding:7px 14px;display:flex;align-items:center;justify-content:space-between;}
+    .voice-lbl{font-family:"Nunito";font-size:10px;font-weight:700;color:var(--stone);}
+    .voice-toggle{font-family:"Nunito";font-size:10px;font-weight:900;background:var(--grn);color:#001a10;border:none;cursor:pointer;padding:5px 12px;border-radius:7px;}
+    .voice-toggle.muted{background:rgba(107,138,172,.4);color:#aabbcc;}
+
+    /* ── GLASS CARD ── */
+    .card{width:92%;max-width:420px;background:var(--panel);border:1.5px solid var(--bdr);border-radius:16px;box-shadow:0 0 22px var(--glow),0 4px 20px rgba(0,0,0,.6);padding:16px 14px;margin:8px auto;}
+    .card-title{font-family:"Nunito";font-size:10px;font-weight:700;color:var(--neon);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;text-align:center;text-shadow:0 0 8px var(--neon);}
+
     /* ── DIGITAL CLOCK ── */
-    .dig-clock{
-      font-family:"Baloo 2"; font-weight:800;
-      font-size:clamp(34px,9.5vw,52px); color:var(--neon);
-      text-align:center; letter-spacing:3px;
-      text-shadow:0 0 20px var(--neon), 0 0 40px rgba(0,212,255,.3);
-      background:var(--panel); border:1.5px solid var(--bdr);
-      border-radius:14px; box-shadow:0 0 22px var(--glow);
-      padding:14px 24px; margin:10px auto; width:92%; max-width:400px;
-      transition:color .5s, text-shadow .5s;
-    }
-    .dig-clock.warn { color:var(--gold); text-shadow:0 0 20px var(--gold); border-color:rgba(255,208,0,.4); }
-    .dig-clock.alert{ color:var(--red);  text-shadow:0 0 20px var(--red);  border-color:rgba(255,59,48,.4); animation:pulse .5s infinite alternate; }
-    .dig-sub{ font-family:"Nunito"; font-size:10px; font-weight:700;
-              color:var(--stone); text-align:center; margin-top:-4px; margin-bottom:8px; }
+    .dig-clock{font-family:"Baloo 2";font-weight:800;font-size:clamp(36px,10vw,54px);color:var(--neon);text-align:center;letter-spacing:3px;text-shadow:0 0 20px var(--neon),0 0 40px rgba(0,212,255,.22);padding:10px 24px;transition:color .5s,text-shadow .5s;}
+    .dig-clock.warn{color:var(--gold);text-shadow:0 0 20px var(--gold);}
+    .dig-clock.alert{color:var(--red);text-shadow:0 0 20px var(--red);animation:pulse .5s infinite alternate;}
+    .dig-sub{font-family:"Nunito";font-size:10px;font-weight:700;color:var(--stone);text-align:center;margin-top:-4px;margin-bottom:4px;}
+
     /* ── METER ── */
-    .meter-card{ width:92%; max-width:400px; background:var(--panel); border:1.5px solid var(--bdr); border-radius:12px; box-shadow:0 0 18px var(--glow); padding:12px 14px; margin:0 auto 8px; }
-    .meter-hdr{ font-family:"Nunito"; font-size:9px; font-weight:700; color:var(--neon); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:7px; text-align:center; text-shadow:0 0 8px var(--neon); }
-    .meter-track{ background:rgba(0,212,255,.08); border-radius:6px; height:18px; overflow:hidden; border:1px solid rgba(0,212,255,.15); }
-    .meter-fill{ height:100%; width:0%; border-radius:6px; background:linear-gradient(90deg,var(--grn) 0%,var(--gold) 65%,var(--red) 100%); transition:width 1s ease; }
-    .meter-msg{ font-family:"Nunito"; font-size:10px; font-weight:700; color:var(--text); margin-top:6px; text-align:center; }
-    /* ── ACTION BUTTONS ── */
-    .action-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; width:92%; max-width:400px; margin:8px auto; }
-    .act-btn{
-      font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; border-radius:14px;
-      padding:20px 10px; font-size:clamp(12px,3.2vw,14px); line-height:1.5;
-      display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center;
-      transition:transform .1s, box-shadow .1s; -webkit-user-select:none; user-select:none;
-    }
-    .act-btn:active{ transform:translateY(3px) scale(.97); }
-    .act-em{ font-size:30px; line-height:1; }
-    .ab-pee-go  { background:linear-gradient(160deg,#ffe566,#d4a000); color:#1a0d00; box-shadow:0 0 18px rgba(255,208,0,.3); border:1.5px solid rgba(255,208,0,.35); }
-    .ab-pee-did { background:linear-gradient(160deg,#fff0a0,#d4a000); color:#1a0d00; box-shadow:0 0 18px rgba(255,208,0,.3); border:1.5px solid rgba(255,208,0,.35); }
-    .ab-poop-go { background:linear-gradient(160deg,#c87941,#7a4a20); color:#fff; box-shadow:0 0 14px rgba(200,121,65,.25); border:1.5px solid rgba(200,121,65,.4); }
-    .ab-poop-did{ background:linear-gradient(160deg,#a06030,#5c3010); color:#fff; box-shadow:0 0 14px rgba(200,121,65,.25); border:1.5px solid rgba(200,121,65,.4); }
-    .btn-bus-big{
-      width:92%; max-width:400px; margin:6px auto;
-      font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer;
-      background:linear-gradient(160deg,#ff7722,#cc3300); color:#fff;
-      border-radius:14px; padding:17px 20px; font-size:clamp(13px,3.8vw,16px);
-      display:flex; align-items:center; justify-content:center; gap:10px;
-      box-shadow:0 0 20px rgba(255,100,0,.3); border:1.5px solid rgba(255,119,34,.4);
-      transition:transform .1s; -webkit-user-select:none; user-select:none;
-    }
-    .btn-bus-big:active{ transform:translateY(3px); }
-    .btn-back{
-      font-family:"Nunito"; font-size:11px; font-weight:900;
-      background:rgba(0,212,255,.1); color:var(--neon);
-      border:1.5px solid var(--bdr); border-radius:8px;
-      padding:7px 13px; cursor:pointer; text-shadow:0 0 6px var(--neon);
-    }
-    /* ── STATS SCREEN ── */
-    .graph-wrap{ width:92%; max-width:400px; margin:8px auto; background:var(--panel); border:1.5px solid var(--bdr); border-radius:16px; box-shadow:0 0 22px var(--glow); padding:14px 10px; }
-    #graphCanvas{ width:100%; border-radius:6px; }
-    .graph-legend{ display:flex; gap:14px; justify-content:center; margin-top:8px; }
-    .leg{ font-family:"Nunito"; font-size:9px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:4px; }
-    .leg-dot{ width:10px; height:10px; border-radius:2px; }
-    .records-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; width:92%; max-width:400px; margin:6px auto; }
-    .rec-tile{ background:var(--panel); border:1.5px solid var(--bdr); border-radius:12px; padding:10px 6px; text-align:center; box-shadow:0 0 14px var(--glow); }
-    .rec-n{ font-family:"Baloo 2"; font-weight:800; font-size:clamp(22px,5.5vw,30px); color:var(--neon); line-height:1; text-shadow:0 0 12px var(--neon); }
-    .rec-l{ font-family:"Nunito"; font-size:8px; font-weight:700; color:var(--stone); margin-top:4px; line-height:1.3; text-transform:uppercase; }
-    /* ── MATH SCREEN ── */
-    #screen-math{ background:linear-gradient(160deg,#050820,#0a1040); }
-    .math-header{ font-family:"Baloo 2"; font-size:clamp(16px,5vw,22px); font-weight:800; color:var(--neon); text-align:center; padding:20px 16px 4px; line-height:1.5; text-shadow:0 0 22px var(--neon); }
-    .math-sub{ font-family:"Nunito"; font-size:11px; font-weight:700; color:var(--stone); text-align:center; padding:0 16px 10px; }
-    .stars-row{ display:flex; justify-content:center; gap:8px; margin:6px 0; }
-    .star{ font-size:26px; opacity:.2; transition:opacity .3s, transform .3s; }
-    .star.lit{ opacity:1; transform:scale(1.2); }
-    .math-qbox{ width:90%; max-width:380px; background:var(--panel2); border:1.5px solid var(--bdr); border-radius:14px; padding:18px; margin:0 auto 10px; box-shadow:0 0 20px var(--glow); }
-    .math-q{ font-family:"Baloo 2"; font-size:clamp(18px,5vw,24px); font-weight:800; color:#fff; text-align:center; line-height:1.4; white-space:pre-wrap; }
-    .math-timer-track{ background:rgba(0,212,255,.1); height:8px; border-radius:6px; margin-top:12px; overflow:hidden; border:1px solid var(--bdr); }
-    .math-timer-fill{ height:100%; width:100%; background:linear-gradient(90deg,var(--grn),var(--gold),var(--red)); transition:width .1s linear; border-radius:6px; }
-    .math-choices{ display:grid; grid-template-columns:1fr 1fr; gap:10px; width:90%; max-width:380px; margin:0 auto; }
-    .math-choice{
-      font-family:"Baloo 2"; font-weight:800; border:1.5px solid var(--bdr); cursor:pointer;
-      background:var(--panel); color:var(--text); font-size:clamp(16px,4.5vw,20px);
-      border-radius:12px; padding:18px 10px; transition:background .15s, transform .1s;
-      box-shadow:0 0 12px var(--glow);
-    }
-    .math-choice:active{ transform:scale(.96); }
-    .math-choice.correct{ background:rgba(0,255,136,.25); border-color:var(--grn); color:var(--grn); box-shadow:0 0 20px rgba(0,255,136,.3); }
-    .math-choice.wrong  { background:rgba(255,59,48,.25);  border-color:var(--red);  color:var(--red); }
-    .math-skip{ font-family:"Nunito"; font-size:10px; font-weight:700; color:rgba(255,255,255,.3); background:none; border:none; cursor:pointer; margin:12px auto; display:block; }
-    /* ── CELEBRATE ── */
-    #screen-celebrate{ background:linear-gradient(160deg,#020510,#050e28); }
-    .celeb-title{ font-family:"Baloo 2"; font-size:clamp(18px,5.5vw,24px); font-weight:800; color:var(--neon); text-align:center; padding:22px 16px 6px; line-height:1.6; text-shadow:0 0 28px var(--neon); animation:pulse .5s infinite alternate; }
-    .celeb-rain{ position:relative; width:100%; height:90px; overflow:hidden; flex-shrink:0; }
-    .cp{ position:absolute; animation:cpFall linear forwards; opacity:0; }
-    @keyframes cpFall{ 0%{transform:translateY(-40px) rotate(0);opacity:1} 100%{transform:translateY(100px) rotate(380deg);opacity:.1} }
-    .celeb-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; width:90%; max-width:380px; margin:8px auto; }
-    .celeb-card{ background:var(--panel2); border:1.5px solid var(--bdr); border-radius:12px; padding:12px 8px; text-align:center; box-shadow:0 0 14px var(--glow); }
-    .celeb-n{ font-family:"Baloo 2"; font-weight:800; font-size:clamp(32px,9vw,44px); color:var(--gold); line-height:1; text-shadow:0 0 16px var(--gold); }
-    .celeb-l{ font-family:"Nunito"; font-size:8px; font-weight:700; color:var(--stone); margin-top:4px; text-transform:uppercase; letter-spacing:.4px; }
-    .celeb-math-txt{ font-family:"Baloo 2"; font-size:12px; font-weight:700; color:var(--neon); text-align:center; padding:6px 16px; line-height:1.8; text-shadow:0 0 10px var(--neon); }
-    .btn-keep{ font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; background:linear-gradient(160deg,var(--neon),#0088bb); color:#001a28; font-size:15px; padding:18px 40px; border-radius:14px; margin:12px auto; box-shadow:0 0 22px rgba(0,212,255,.4); display:block; }
-    .btn-keep:active{ transform:translateY(3px); }
-    /* ── BUS / GO ── */
-    #screen-bus,#screen-bus-go{ background:linear-gradient(160deg,#1a0800,#3d1000); }
-    .bus-hero{ font-size:76px; display:block; text-align:center; margin:22px auto 8px; animation:bounce 1.2s ease-in-out infinite; }
-    @keyframes bounce{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-    .bus-title{ font-family:"Baloo 2"; font-size:clamp(17px,5vw,22px); font-weight:800; color:#FF9A30; text-align:center; padding:6px 20px; line-height:1.6; text-shadow:3px 3px 0 rgba(0,0,0,.5); }
-    .bus-card{ width:90%; max-width:380px; background:rgba(255,255,255,.07); border:1.5px solid rgba(255,150,50,.3); border-radius:14px; padding:14px 16px; margin:10px auto; font-family:"Nunito"; font-size:12px; font-weight:700; color:#eee; line-height:2.2; }
-    .bus-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; width:90%; max-width:380px; margin:6px auto; }
-    .bus-yes { font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; border-radius:12px; padding:18px 10px; font-size:12px; line-height:1.8; text-align:center; background:linear-gradient(160deg,#00ff88,#00aa55); color:#001a0a; box-shadow:0 0 16px rgba(0,255,136,.3); }
-    .bus-nope{ font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; border-radius:12px; padding:18px 10px; font-size:12px; line-height:1.8; text-align:center; background:linear-gradient(160deg,#ffe566,#d4a000); color:#1a0d00; box-shadow:0 0 14px rgba(255,208,0,.25); }
-    .bus-yes:active,.bus-nope:active{ transform:translateY(3px); }
-    .go-hero{ font-size:80px; display:block; text-align:center; margin:24px auto 8px; animation:shake .5s linear infinite; }
-    @keyframes shake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-7px) rotate(-4deg)} 75%{transform:translateX(7px) rotate(4deg)} }
-    .go-sub{ font-family:"Nunito"; font-size:12px; font-weight:700; color:rgba(255,255,255,.7); text-align:center; padding:0 22px; line-height:2.4; max-width:340px; }
-    .btn-tried{ font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; background:linear-gradient(160deg,#00ff88,#00aa55); color:#001a0a; font-size:15px; padding:20px 38px; border-radius:14px; margin:18px auto; display:block; box-shadow:0 0 18px rgba(0,255,136,.3); }
-    .btn-tried:active{ transform:translateY(3px); }
+    .meter-card{width:92%;max-width:420px;background:var(--panel);border:1.5px solid var(--bdr);border-radius:12px;box-shadow:0 0 18px var(--glow);padding:12px 14px;margin:0 auto 8px;}
+    .meter-hdr{font-family:"Nunito";font-size:9px;font-weight:700;color:var(--neon);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;text-align:center;text-shadow:0 0 8px var(--neon);}
+    .meter-track{background:rgba(0,212,255,.08);border-radius:6px;height:18px;overflow:hidden;border:1px solid rgba(0,212,255,.15);}
+    .meter-fill{height:100%;width:0%;border-radius:6px;background:linear-gradient(90deg,var(--grn) 0%,var(--gold) 65%,var(--red) 100%);transition:width 1s ease;}
+    .meter-msg{font-family:"Nunito";font-size:10px;font-weight:700;color:var(--text);margin-top:6px;text-align:center;}
+
+    /* ── ACTION GRID ── */
+    .action-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:92%;max-width:420px;margin:8px auto;}
+    .act-btn{font-family:"Baloo 2";font-weight:800;border:none;cursor:pointer;border-radius:16px;padding:22px 10px;font-size:clamp(12px,3.2vw,14px);line-height:1.5;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;transition:transform .1s;-webkit-user-select:none;user-select:none;border:2px solid transparent;}
+    .act-btn:active{transform:translateY(3px) scale(.97);}
+    .act-em{font-size:32px;line-height:1;}
+    .ab-pee-go{background:linear-gradient(155deg,#ffe566,#d4a000);color:#1a0d00;box-shadow:0 0 18px rgba(255,208,0,.3);border-color:rgba(255,208,0,.4);}
+    .ab-pee-did{background:linear-gradient(155deg,#fff0a0,#c89000);color:#1a0d00;box-shadow:0 0 18px rgba(255,208,0,.3);border-color:rgba(255,208,0,.35);}
+    .ab-poop-go{background:linear-gradient(155deg,#c87941,#7a4a20);color:#fff;box-shadow:0 0 14px rgba(200,121,65,.25);border-color:rgba(200,121,65,.4);}
+    .ab-poop-did{background:linear-gradient(155deg,#a06030,#5c3010);color:#fff;box-shadow:0 0 14px rgba(200,121,65,.25);border-color:rgba(200,121,65,.35);}
+    .btn-bus-big{width:92%;max-width:420px;margin:6px auto;font-family:"Baloo 2";font-weight:800;border:none;cursor:pointer;background:linear-gradient(155deg,#ff7722,#cc3300);color:#fff;border-radius:16px;padding:18px 20px;font-size:clamp(13px,3.8vw,16px);display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 0 20px rgba(255,100,0,.3);border:2px solid rgba(255,119,34,.4);transition:transform .1s;-webkit-user-select:none;user-select:none;}
+    .btn-bus-big:active{transform:translateY(3px);}
+
     /* ── STEPS ── */
-    .steps-card{ width:90%; max-width:380px; background:rgba(0,30,80,.5); border:1.5px solid var(--bdr); border-radius:14px; padding:12px 14px; margin:10px auto; }
-    .step{ display:flex; align-items:center; gap:11px; padding:9px 0; border-bottom:1px solid rgba(0,212,255,.1); font-family:"Nunito"; font-size:12px; font-weight:700; color:var(--text); line-height:1.4; }
-    .step:last-child{ border-bottom:none; }
-    .step-i{ font-size:22px; flex-shrink:0; }
-    .btn-did{ width:88%; max-width:380px; margin:10px auto; font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; border-radius:14px; padding:20px; font-size:clamp(13px,3.8vw,16px); display:flex; align-items:center; justify-content:center; gap:10px; }
-    .btn-did:active{ transform:translateY(3px); }
-    /* ── ACHIEVEMENT TOAST ── */
-    #achieveToast{ position:fixed; top:-100px; left:50%; transform:translateX(-50%); z-index:9998; background:rgba(0,18,50,.97); border:1.5px solid var(--neon); border-radius:14px; padding:12px 20px; text-align:center; white-space:nowrap; transition:top .4s cubic-bezier(.34,1.56,.64,1); box-shadow:0 0 28px var(--glow), 0 8px 30px rgba(0,0,0,.5); }
-    #achieveToast.show{ top:70px; }
-    .at-icon{ font-size:26px; }
-    .at-title{ font-family:"Baloo 2"; font-size:12px; font-weight:800; color:var(--gold); margin-top:2px; text-shadow:0 0 10px var(--gold); }
-    .at-name{ font-family:"Nunito"; font-size:10px; font-weight:700; color:var(--neon); }
-    /* ── CHECK-IN OVERLAY ── */
-    #checkIn{ display:none; position:fixed; inset:0; z-index:8888;
-              background:rgba(1,5,18,.96); backdrop-filter:blur(10px);
-              flex-direction:column; align-items:center; justify-content:center;
-              text-align:center; padding:20px; border:none; }
-    #checkIn.show{ display:flex; }
-    .ci-ring{ font-size:64px; animation:ciRing .45s ease-in-out infinite alternate; margin-bottom:6px; }
-    @keyframes ciRing{ from{transform:rotate(-16deg) scale(1)} to{transform:rotate(16deg) scale(1.12)} }
-    .ci-title{ font-family:"Baloo 2"; font-size:clamp(18px,5.5vw,24px); font-weight:800; color:var(--neon); line-height:1.4; margin-bottom:2px; text-shadow:0 0 20px var(--neon); }
-    .ci-sub{ font-family:"Nunito"; font-size:12px; font-weight:700; color:var(--stone); margin-bottom:6px; line-height:1.6; }
-    .ci-countbar{ width:100%; max-width:320px; background:rgba(0,212,255,.1); height:6px; border-radius:4px; margin:0 auto 16px; overflow:hidden; border:1px solid var(--bdr); }
-    .ci-countfill{ height:100%; width:100%; background:var(--neon); transition:width 1s linear; border-radius:4px; box-shadow:0 0 10px var(--neon); }
-    .ci-btn{ font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; border-radius:14px; padding:15px 18px; font-size:14px; width:100%; max-width:320px; margin:5px auto; display:flex; align-items:center; gap:10px; transition:transform .1s; }
-    .ci-btn:active{ transform:translateY(3px); }
-    .ci-pee { background:linear-gradient(160deg,#ffe566,#d4a000); color:#1a0d00; box-shadow:0 0 14px rgba(255,208,0,.3); }
-    .ci-poop{ background:linear-gradient(160deg,#c87941,#7a4a20); color:#fff; box-shadow:0 0 10px rgba(200,121,65,.2); }
-    .ci-soon{ background:rgba(100,120,150,.3); color:var(--text); border:1.5px solid rgba(100,120,150,.4); }
-    .ci-good{ background:linear-gradient(160deg,#00ff88,#00aa55); color:#001a0a; box-shadow:0 0 14px rgba(0,255,136,.25); }
-    .ci-num{ font-family:"Nunito"; font-size:9px; font-weight:700; color:rgba(0,212,255,.3); margin-top:12px; }
-    /* ── ALERT ── */
-    #alertOverlay{ display:none; position:fixed; inset:0; z-index:9999; background:rgba(180,10,0,.93); backdrop-filter:blur(4px); flex-direction:column; align-items:center; justify-content:center; text-align:center; }
-    #alertOverlay.show{ display:flex; }
-    .al-icon{ font-size:80px; animation:shake .3s linear infinite; }
-    .al-msg{ font-family:"Baloo 2"; font-size:clamp(19px,5.5vw,25px); font-weight:800; color:#fff; padding:14px 20px; line-height:1.7; text-shadow:3px 3px 0 rgba(0,0,0,.4); animation:pulse .4s infinite alternate; }
-    .btn-alert{ font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; background:#fff; color:var(--red); font-size:15px; padding:18px 34px; border-radius:14px; margin-top:10px; box-shadow:0 0 20px rgba(255,59,48,.5); }
-    .btn-alert:active{ transform:translateY(3px); }
+    .steps-card{width:90%;max-width:400px;background:rgba(0,30,80,.5);border:1.5px solid var(--bdr);border-radius:14px;padding:12px 14px;margin:10px auto;}
+    .step{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid rgba(0,212,255,.1);font-family:"Nunito";font-size:12px;font-weight:700;color:var(--text);line-height:1.4;}
+    .step:last-child{border-bottom:none;}
+    .step-i{font-size:22px;flex-shrink:0;}
+    .btn-did{width:88%;max-width:400px;margin:10px auto;font-family:"Baloo 2";font-weight:800;border:none;cursor:pointer;border-radius:16px;padding:22px;font-size:clamp(13px,3.8vw,16px);display:flex;align-items:center;justify-content:center;gap:10px;}
+    .btn-did:active{transform:translateY(3px);}
+
+    /* ── MATH ── */
+    #screen-math{background:linear-gradient(160deg,#050820,#0a1040);}
+    .math-header{font-family:"Baloo 2";font-size:clamp(16px,5vw,22px);font-weight:800;color:var(--neon);text-align:center;padding:20px 16px 4px;line-height:1.5;text-shadow:0 0 22px var(--neon);}
+    .math-sub{font-family:"Nunito";font-size:11px;font-weight:700;color:var(--stone);text-align:center;padding:0 16px 10px;}
+    .stars-row{display:flex;justify-content:center;gap:8px;margin:6px 0;}
+    .star{font-size:26px;opacity:.2;transition:opacity .3s,transform .3s;}
+    .star.lit{opacity:1;transform:scale(1.2);}
+    .math-qbox{width:90%;max-width:380px;background:var(--panel2);border:1.5px solid var(--bdr);border-radius:14px;padding:18px;margin:0 auto 10px;box-shadow:0 0 20px var(--glow);}
+    .math-q{font-family:"Baloo 2";font-size:clamp(18px,5vw,24px);font-weight:800;color:#fff;text-align:center;line-height:1.4;white-space:pre-wrap;}
+    .math-timer-track{background:rgba(0,212,255,.1);height:8px;border-radius:6px;margin-top:12px;overflow:hidden;border:1px solid var(--bdr);}
+    .math-timer-fill{height:100%;width:100%;background:linear-gradient(90deg,var(--grn),var(--gold),var(--red));transition:width .1s linear;border-radius:6px;}
+    .math-choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:90%;max-width:380px;margin:0 auto;}
+    .math-choice{font-family:"Baloo 2";font-weight:800;border:1.5px solid var(--bdr);cursor:pointer;background:var(--panel);color:var(--text);font-size:clamp(16px,4.5vw,20px);border-radius:12px;padding:18px 10px;transition:background .15s,transform .1s;box-shadow:0 0 12px var(--glow);}
+    .math-choice:active{transform:scale(.96);}
+    .math-choice.correct{background:rgba(0,255,136,.25);border-color:var(--grn);color:var(--grn);box-shadow:0 0 20px rgba(0,255,136,.3);}
+    .math-choice.wrong{background:rgba(255,59,48,.25);border-color:var(--red);color:var(--red);}
+    .math-skip{font-family:"Nunito";font-size:10px;font-weight:700;color:rgba(255,255,255,.3);background:none;border:none;cursor:pointer;margin:12px auto;display:block;}
+
+    /* ── CELEBRATE ── */
+    #screen-celebrate{background:linear-gradient(160deg,#020510,#050e28);}
+    .celeb-title{font-family:"Baloo 2";font-size:clamp(18px,5.5vw,24px);font-weight:800;color:var(--neon);text-align:center;padding:20px 16px 6px;line-height:1.5;text-shadow:0 0 28px var(--neon);animation:pulse .5s infinite alternate;}
+    .celeb-rain{position:relative;width:100%;height:90px;overflow:hidden;flex-shrink:0;}
+    .cp{position:absolute;animation:cpFall linear forwards;opacity:0;}
+    @keyframes cpFall{0%{transform:translateY(-40px) rotate(0);opacity:1}100%{transform:translateY(100px) rotate(380deg);opacity:.1}}
+    .celeb-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:90%;max-width:380px;margin:8px auto;}
+    .celeb-card{background:var(--panel2);border:1.5px solid var(--bdr);border-radius:12px;padding:12px 8px;text-align:center;box-shadow:0 0 14px var(--glow);}
+    .celeb-n{font-family:"Baloo 2";font-weight:800;font-size:clamp(32px,9vw,44px);color:var(--gold);line-height:1;text-shadow:0 0 16px var(--gold);}
+    .celeb-l{font-family:"Nunito";font-size:8px;font-weight:700;color:var(--stone);margin-top:4px;text-transform:uppercase;letter-spacing:.4px;}
+    .celeb-math-txt{font-family:"Baloo 2";font-size:12px;font-weight:700;color:var(--neon);text-align:center;padding:6px 16px;line-height:1.8;text-shadow:0 0 10px var(--neon);}
+    .btn-keep{font-family:"Baloo 2";font-weight:800;border:none;cursor:pointer;background:linear-gradient(155deg,var(--neon),#0088bb);color:#001a28;font-size:15px;padding:18px 40px;border-radius:16px;margin:12px auto;box-shadow:0 0 22px rgba(0,212,255,.4);display:block;}
+    .btn-keep:active{transform:translateY(3px);}
+
+    /* ── BUS / GO ── */
+    #screen-bus,#screen-bus-go{background:linear-gradient(160deg,#1a0800,#3d1000);}
+    .bus-hero{font-size:76px;display:block;text-align:center;margin:22px auto 8px;animation:bounce 1.2s ease-in-out infinite;}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    .bus-title{font-family:"Baloo 2";font-size:clamp(17px,5vw,22px);font-weight:800;color:#FF9A30;text-align:center;padding:6px 20px;line-height:1.5;}
+    .bus-card{width:90%;max-width:380px;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,150,50,.3);border-radius:14px;padding:14px 16px;margin:10px auto;font-family:"Nunito";font-size:12px;font-weight:700;color:#eee;line-height:2.2;}
+    .bus-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:90%;max-width:380px;margin:6px auto;}
+    .bus-yes{font-family:"Baloo 2";font-weight:800;border:none;cursor:pointer;border-radius:14px;padding:18px 10px;font-size:12px;line-height:1.8;text-align:center;background:linear-gradient(155deg,#00ff88,#00aa55);color:#001a0a;box-shadow:0 0 16px rgba(0,255,136,.3);}
+    .bus-nope{font-family:"Baloo 2";font-weight:800;border:none;cursor:pointer;border-radius:14px;padding:18px 10px;font-size:12px;line-height:1.8;text-align:center;background:linear-gradient(155deg,#ffe566,#d4a000);color:#1a0d00;box-shadow:0 0 14px rgba(255,208,0,.25);}
+    .bus-yes:active,.bus-nope:active{transform:translateY(3px);}
+    .go-hero{font-size:80px;display:block;text-align:center;margin:24px auto 8px;animation:shake .5s linear infinite;}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px) rotate(-4deg)}75%{transform:translateX(7px) rotate(4deg)}}
+    .go-sub{font-family:"Nunito";font-size:12px;font-weight:700;color:rgba(255,255,255,.7);text-align:center;padding:0 22px;line-height:2.4;max-width:340px;}
+    .btn-tried{font-family:"Baloo 2";font-weight:800;border:none;cursor:pointer;background:linear-gradient(155deg,#00ff88,#00aa55);color:#001a0a;font-size:15px;padding:20px 38px;border-radius:16px;margin:18px auto;display:block;box-shadow:0 0 18px rgba(0,255,136,.3);}
+    .btn-tried:active{transform:translateY(3px);}
+
+    /* ── STATS ── */
+    .brand{text-align:center;padding:12px 16px 4px;width:100%;}
+    .eyebrow{font-family:"Nunito";font-size:10px;font-weight:700;color:var(--neon);letter-spacing:3px;text-transform:uppercase;text-shadow:0 0 8px var(--neon);}
+    .brand h1{font-family:"Baloo 2";font-weight:800;line-height:1.1;}
+    .brand h1 span:first-child{font-size:clamp(18px,5vw,24px);display:block;color:var(--text);}
+    .brand h1 span:last-child{font-size:clamp(20px,5.5vw,28px);display:block;color:var(--neon);text-shadow:0 0 16px var(--neon);}
+    .graph-wrap{width:92%;max-width:420px;margin:8px auto;background:var(--panel);border:1.5px solid var(--bdr);border-radius:16px;box-shadow:0 0 22px var(--glow);padding:14px 10px;}
+    #graphCanvas{width:100%;border-radius:6px;}
+    .graph-legend{display:flex;gap:14px;justify-content:center;margin-top:8px;}
+    .leg{font-family:"Nunito";font-size:9px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:4px;}
+    .leg-dot{width:10px;height:10px;border-radius:2px;}
+    .records-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:92%;max-width:420px;margin:6px auto;}
+    .rec-tile{background:var(--panel);border:1.5px solid var(--bdr);border-radius:12px;padding:10px 6px;text-align:center;box-shadow:0 0 14px var(--glow);}
+    .rec-n{font-family:"Baloo 2";font-weight:800;font-size:clamp(22px,5.5vw,30px);color:var(--neon);line-height:1;text-shadow:0 0 12px var(--neon);}
+    .rec-l{font-family:"Nunito";font-size:8px;font-weight:700;color:var(--stone);margin-top:4px;line-height:1.3;text-transform:uppercase;}
+
     /* ── QR ── */
-    #screen-qr{ background:var(--bg); }
-    .qr-title{ font-family:"Baloo 2"; font-size:20px; font-weight:800; color:var(--neon); text-align:center; padding:22px 20px 10px; line-height:1.5; text-shadow:0 0 16px var(--neon); }
-    #qrcode{ background:#fff; padding:13px; margin:6px auto; display:inline-block; border:2px solid var(--neon); border-radius:8px; box-shadow:0 0 22px var(--glow); }
-    .qr-url{ font-family:"Nunito"; font-size:9px; font-weight:700; color:var(--stone); text-align:center; padding:8px 20px; word-break:break-all; max-width:320px; line-height:1.8; }
+    #screen-qr{background:var(--bg);}
+    .qr-title{font-family:"Baloo 2";font-size:20px;font-weight:800;color:var(--neon);text-align:center;padding:22px 20px 10px;line-height:1.5;text-shadow:0 0 16px var(--neon);}
+    #qrcode{background:#fff;padding:13px;margin:6px auto;display:inline-block;border:2px solid var(--neon);border-radius:8px;box-shadow:0 0 22px var(--glow);}
+    .qr-url{font-family:"Nunito";font-size:9px;font-weight:700;color:var(--stone);text-align:center;padding:8px 20px;word-break:break-all;max-width:320px;line-height:1.8;}
+
     /* ── SETTINGS ── */
-    #screen-settings{ background:linear-gradient(160deg,#030c1e,#050e28); }
-    .set-row{ width:90%; max-width:380px; background:var(--panel); border:1.5px solid var(--bdr); border-radius:12px; padding:14px 16px; margin:8px auto; display:flex; align-items:center; justify-content:space-between; gap:12px; box-shadow:0 0 14px var(--glow); }
-    .set-lbl{ font-family:"Nunito"; font-size:11px; font-weight:700; color:var(--text); flex:1; line-height:1.5; }
-    .set-lbl small{ font-weight:700; color:var(--stone); }
-    .set-select{ font-family:"Nunito"; font-size:12px; font-weight:900; background:var(--neon); color:#001a28; border:none; border-radius:8px; padding:6px 10px; cursor:pointer; }
-    .btn-danger{ font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer; background:linear-gradient(160deg,#cc2200,#880000); color:#fff; border-radius:12px; padding:14px 24px; font-size:13px; margin:8px auto; display:block; width:90%; max-width:380px; box-shadow:0 0 16px rgba(255,59,48,.3); border:1.5px solid rgba(255,59,48,.3); }
-    .btn-danger:active{ transform:translateY(3px); }
+    #screen-settings{background:linear-gradient(160deg,#030c1e,#050e28);}
+    .set-row{width:90%;max-width:400px;background:var(--panel);border:1.5px solid var(--bdr);border-radius:12px;padding:14px 16px;margin:8px auto;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 0 14px var(--glow);}
+    .set-lbl{font-family:"Nunito";font-size:11px;font-weight:700;color:var(--text);flex:1;line-height:1.5;}
+    .set-lbl small{font-weight:700;color:var(--stone);}
+    .set-select{font-family:"Nunito";font-size:12px;font-weight:900;background:var(--neon);color:#001a28;border:none;border-radius:8px;padding:6px 10px;cursor:pointer;}
+    .btn-danger{font-family:"Baloo 2";font-weight:800;border:none;cursor:pointer;background:linear-gradient(155deg,#cc2200,#880000);color:#fff;border-radius:12px;padding:14px 24px;font-size:13px;margin:8px auto;display:block;width:90%;max-width:400px;box-shadow:0 0 16px rgba(255,59,48,.3);border:1.5px solid rgba(255,59,48,.3);}
+    .btn-danger:active{transform:translateY(3px);}
+
+    /* ── ACHIEVEMENT TOAST ── */
+    #achieveToast{position:fixed;top:-100px;left:50%;transform:translateX(-50%);z-index:9998;background:rgba(0,18,50,.97);border:2px solid var(--gold);border-radius:16px;padding:12px 20px;text-align:center;white-space:nowrap;transition:top .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 28px rgba(255,208,0,.3),0 8px 30px rgba(0,0,0,.5);}
+    #achieveToast.show{top:70px;}
+    .at-icon{font-size:28px;}
+    .at-title{font-family:"Baloo 2";font-size:12px;font-weight:800;color:var(--gold);margin-top:2px;text-shadow:0 0 10px var(--gold);}
+    .at-name{font-family:"Nunito";font-size:10px;font-weight:700;color:var(--neon);}
+
+    /* ── CHECK-IN OVERLAY ── */
+    #checkIn{display:none;position:fixed;inset:0;z-index:8888;background:rgba(1,5,18,.96);backdrop-filter:blur(12px);flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;}
+    #checkIn.show{display:flex;}
+    .ci-ring{font-size:64px;animation:ciRing .45s ease-in-out infinite alternate;margin-bottom:6px;}
+    @keyframes ciRing{from{transform:rotate(-16deg) scale(1)}to{transform:rotate(16deg) scale(1.12)}}
+    .ci-title{font-family:"Baloo 2";font-size:clamp(20px,6vw,26px);font-weight:800;color:var(--neon);line-height:1.3;margin-bottom:2px;text-shadow:0 0 20px var(--neon);}
+    .ci-sub{font-family:"Nunito";font-size:12px;font-weight:700;color:var(--stone);margin-bottom:6px;line-height:1.6;}
+    .ci-countbar{width:100%;max-width:320px;background:rgba(0,212,255,.1);height:6px;border-radius:4px;margin:0 auto 16px;overflow:hidden;border:1px solid var(--bdr);}
+    .ci-countfill{height:100%;width:100%;background:var(--neon);transition:width 1s linear;border-radius:4px;box-shadow:0 0 10px var(--neon);}
+    .ci-btn{font-family:"Baloo 2";font-weight:800;border:none;cursor:pointer;border-radius:14px;padding:15px 18px;font-size:14px;width:100%;max-width:320px;margin:5px auto;display:flex;align-items:center;gap:10px;transition:transform .1s;}
+    .ci-btn:active{transform:translateY(3px);}
+    .ci-pee{background:linear-gradient(155deg,#ffe566,#d4a000);color:#1a0d00;box-shadow:0 0 14px rgba(255,208,0,.3);}
+    .ci-poop{background:linear-gradient(155deg,#c87941,#7a4a20);color:#fff;box-shadow:0 0 10px rgba(200,121,65,.2);}
+    .ci-soon{background:rgba(100,120,150,.3);color:var(--text);border:1.5px solid rgba(100,120,150,.4);}
+    .ci-good{background:linear-gradient(155deg,#00ff88,#00aa55);color:#001a0a;box-shadow:0 0 14px rgba(0,255,136,.25);}
+    .ci-num{font-family:"Nunito";font-size:9px;font-weight:700;color:rgba(0,212,255,.3);margin-top:12px;}
+
+    /* ── ALERT ── */
+    #alertOverlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(180,10,0,.93);backdrop-filter:blur(4px);flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+    #alertOverlay.show{display:flex;}
+    .al-icon{font-size:80px;animation:shake .3s linear infinite;}
+    .al-msg{font-family:"Baloo 2";font-size:clamp(19px,5.5vw,25px);font-weight:800;color:#fff;padding:14px 20px;line-height:1.7;text-shadow:3px 3px 0 rgba(0,0,0,.4);animation:pulse .4s infinite alternate;}
+    .btn-alert{font-family:"Baloo 2";font-weight:800;border:none;cursor:pointer;background:#fff;color:var(--red);font-size:15px;padding:18px 34px;border-radius:14px;margin-top:10px;box-shadow:0 0 20px rgba(255,59,48,.5);}
+    .btn-alert:active{transform:translateY(3px);}
   </style>
 </head>
 <body>
@@ -352,13 +257,13 @@
 <!-- ═══ CHECK-IN OVERLAY ═══ -->
 <div id="checkIn">
   <span class="ci-ring">⏰</span>
-  <div class="ci-title">MISSION CHECK!</div>
-  <div class="ci-sub">How is Jaxon feeling<br>right now?</div>
+  <div class="ci-title">MISSION CHECK, JAXON!</div>
+  <div class="ci-sub">How are you feeling right now?</div>
   <div class="ci-countbar"><div class="ci-countfill" id="ciFill"></div></div>
   <button class="ci-btn ci-pee"  onclick="ciAns('pee')"> <span style="font-size:24px">💧</span> I NEED TO PEE!</button>
   <button class="ci-btn ci-poop" onclick="ciAns('poop')"><span style="font-size:24px">💩</span> I NEED TO POOP!</button>
   <button class="ci-btn ci-soon" onclick="ciAns('maybe')"><span style="font-size:24px">😐</span> MAYBE IN 10 MIN…</button>
-  <button class="ci-btn ci-good" onclick="ciAns('good')"><span style="font-size:24px">😊</span> ALL GOOD!</button>
+  <button class="ci-btn ci-good" onclick="ciAns('good')"> <span style="font-size:24px">😊</span> ALL GOOD!</button>
   <div class="ci-num">Mission Check #<span id="ciNum">1</span></div>
 </div>
 
@@ -374,45 +279,57 @@
 <div class="screen active" id="screen-hub">
   <div class="topbar">
     <div class="tb-gem">💎 <span id="hubGems">0</span></div>
-    <span class="tb-mid">TOILET MISSION</span>
+    <span class="tb-mid">JAXON'S MISSION</span>
     <div class="tb-right">
       <span class="tb-pill" onclick="showScreen('settings')">⚙️</span>
-      <span class="tb-pill" onclick="showScreen('qr')">QR</span>
     </div>
   </div>
-  <div class="brand">
-    <p class="eyebrow">space mission control</p>
-    <h1><span>JAXON'S</span><span>TOILET MISSION</span></h1>
-    <span class="badge">Genius+ Mode 🚀</span>
+
+  <div class="hub-hero">
+    <div class="hub-hero-jaxon">JAXON'S</div>
+    <div class="hub-hero-label">MISSIONS COMPLETE 🚀</div>
+    <div class="hub-hero-n" id="hubTotal">0</div>
+    <div class="hub-hero-sub">💧 <span id="hubTotalPee">0</span> pees &nbsp;·&nbsp; 💩 <span id="hubTotalPoop">0</span> poops</div>
   </div>
-  <div class="hero-row">
-    <div class="hero-tile">
-      <div class="hero-n pee-col" id="hubTotalPee">0</div>
-      <div class="hero-lbl">Total Pees 💧</div>
+
+  <div class="quick-row">
+    <div class="quick-tile">
+      <span class="quick-icon">🔥</span>
+      <span class="quick-n qn-streak" id="hubStreak">0</span>
+      <span class="quick-lbl">day streak</span>
     </div>
-    <div class="hero-tile">
-      <div class="hero-n poop-col" id="hubTotalPoop">0</div>
-      <div class="hero-lbl">Total Poops 💩</div>
+    <div class="quick-div"></div>
+    <div class="quick-tile">
+      <span class="quick-icon">⏰</span>
+      <span class="quick-n" id="cdDisplay">30:00</span>
+      <span class="quick-lbl">next check</span>
+    </div>
+    <div class="quick-div"></div>
+    <div class="quick-tile">
+      <span class="quick-icon">📅</span>
+      <span class="quick-n qn-today" id="hubToday">0</span>
+      <span class="quick-lbl">today</span>
     </div>
   </div>
-  <div class="stat-row">
-    <div class="stat-tile"><div class="stat-n gc" id="hubToday">0</div>  <div class="stat-l">Today<br>trips</div></div>
-    <div class="stat-tile"><div class="stat-n lc" id="hubStreak">0</div> <div class="stat-l">Day<br>streak 🔥</div></div>
-    <div class="stat-tile"><div class="stat-n tc" id="hubBest">0</div>   <div class="stat-l">Best<br>streak 🏆</div></div>
-    <div class="stat-tile"><div class="stat-n dc" id="hubGems2">0</div>  <div class="stat-l">Gems<br>💎</div></div>
+
+  <div class="main-actions">
+    <button class="main-btn main-pee" onclick="showScreen('pee')">
+      <span class="main-em">💧</span>
+      <span class="main-txt">PEE<br>MISSION</span>
+    </button>
+    <button class="main-btn main-poop" onclick="showScreen('poop')">
+      <span class="main-em">💩</span>
+      <span class="main-txt">POOP<br>MISSION</span>
+    </button>
   </div>
-  <div class="mission-band">
-    <span class="cd-label">⏰ NEXT MISSION CHECK</span>
-    <span class="cd-time" id="cdDisplay">30:00</span>
+
+  <div class="nav-dock">
+    <button class="dock-btn" onclick="showScreen('stats')">  <span>📊</span><span>Stats</span></button>
+    <button class="dock-btn" onclick="launchMathPractice()"> <span>🧮</span><span>Math</span></button>
+    <button class="dock-btn" onclick="showScreen('bus')">    <span>🚌</span><span>Bus</span></button>
+    <button class="dock-btn" onclick="showScreen('qr')">     <span>📱</span><span>QR</span></button>
   </div>
-  <div class="hub-grid">
-    <button class="hub-btn hb-pee"   onclick="showScreen('pee')">   <span class="hub-btn-em">💧</span>Pee Mission</button>
-    <button class="hub-btn hb-poop"  onclick="showScreen('poop')">  <span class="hub-btn-em">💩</span>Poop Mission</button>
-    <button class="hub-btn hb-stats" onclick="showScreen('stats')"> <span class="hub-btn-em">📊</span>Stats Lab</button>
-    <button class="hub-btn hb-math"  onclick="launchMathPractice()"><span class="hub-btn-em">🧮</span>Math Launch</button>
-    <button class="hub-btn hb-bus"   onclick="showScreen('bus')">   <span class="hub-btn-em">🚌</span>Bus Check</button>
-    <button class="hub-btn hb-qr"    onclick="showScreen('qr')">    <span class="hub-btn-em">📱</span>QR Code</button>
-  </div>
+
   <div class="voice-bar">
     <span class="voice-lbl" id="voiceLabel">🔊 Voice: ON</span>
     <button class="voice-toggle" id="voiceToggle" onclick="toggleVoice()">Tap to mute</button>
@@ -425,7 +342,7 @@
   <div class="topbar">
     <button class="btn-back" onclick="showScreen('hub')">← Hub</button>
     <span class="tb-mid" style="color:var(--pee);text-shadow:0 0 10px var(--pee)">💧 PEE MISSION</span>
-    <span style="width:55px"></span>
+    <span style="width:60px"></span>
   </div>
   <div class="card" style="margin-top:14px">
     <div class="card-title">TIME SINCE LAST PEE</div>
@@ -438,8 +355,8 @@
     <div class="meter-msg" id="peeMeterMsg">Tank is empty. No worries. 😊</div>
   </div>
   <div class="action-grid">
-    <button class="act-btn ab-pee-go"  onclick="showScreen('go-pee')"> <span class="act-em">🚽</span>I NEED<br>TO PEE!</button>
-    <button class="act-btn ab-pee-did" onclick="markTrip('pee')">       <span class="act-em">💧</span>I JUST<br>PEED! +💎</button>
+    <button class="act-btn ab-pee-go"  onclick="showScreen('go-pee')"><span class="act-em">🚽</span>I NEED<br>TO PEE!</button>
+    <button class="act-btn ab-pee-did" onclick="markTrip('pee')">      <span class="act-em">💧</span>I JUST<br>PEED! +💎</button>
   </div>
 </div>
 
@@ -449,7 +366,7 @@
   <div class="topbar">
     <button class="btn-back" onclick="showScreen('hub')">← Hub</button>
     <span class="tb-mid" style="color:var(--poop);text-shadow:0 0 10px var(--poop)">💩 POOP MISSION</span>
-    <span style="width:55px"></span>
+    <span style="width:60px"></span>
   </div>
   <div class="card" style="margin-top:14px">
     <div class="card-title">TIME SINCE LAST POOP</div>
@@ -476,10 +393,10 @@
   <div class="topbar" style="background:rgba(0,5,20,.9);border-color:rgba(255,208,0,.3)">
     <button class="btn-back" onclick="showScreen('pee')">← Back</button>
     <span class="tb-mid" style="color:var(--pee);text-shadow:0 0 10px var(--pee)">PEE LAUNCH!</span>
-    <span style="width:55px"></span>
+    <span style="width:60px"></span>
   </div>
   <span style="font-size:90px;display:block;text-align:center;margin:20px auto 6px;animation:shake .5s linear infinite">🚽</span>
-  <div class="bus-title" style="color:var(--pee);text-shadow:0 0 16px var(--pee)">PEE MISSION:<br>LAUNCH NOW! 💧</div>
+  <div class="bus-title" style="color:var(--pee);text-shadow:0 0 16px var(--pee)">JAXON'S PEE MISSION:<br>LAUNCH NOW! 💧</div>
   <div class="steps-card">
     <div class="step"><span class="step-i">1️⃣</span>Walk to the bathroom</div>
     <div class="step"><span class="step-i">2️⃣</span>Pull down your pants</div>
@@ -487,7 +404,7 @@
     <div class="step"><span class="step-i">4️⃣</span>Shake, pull up, flush</div>
     <div class="step"><span class="step-i">5️⃣</span>Wash hands 🧼</div>
   </div>
-  <button class="btn-did" style="background:linear-gradient(160deg,#ffe566,#d4a000);color:#1a0d00;box-shadow:0 0 18px rgba(255,208,0,.35);border:1.5px solid rgba(255,208,0,.4)" onclick="markTrip('pee')">
+  <button class="btn-did" style="background:linear-gradient(155deg,#ffe566,#d4a000);color:#1a0d00;box-shadow:0 0 18px rgba(255,208,0,.35);border:2px solid rgba(255,208,0,.4)" onclick="markTrip('pee')">
     <span style="font-size:26px">✅</span> MISSION COMPLETE! +💎
   </button>
 </div>
@@ -498,10 +415,10 @@
   <div class="topbar" style="background:rgba(0,5,20,.9);border-color:rgba(200,121,65,.3)">
     <button class="btn-back" onclick="showScreen('poop')">← Back</button>
     <span class="tb-mid" style="color:var(--poop);text-shadow:0 0 10px var(--poop)">POOP LAUNCH!</span>
-    <span style="width:55px"></span>
+    <span style="width:60px"></span>
   </div>
   <span style="font-size:90px;display:block;text-align:center;margin:20px auto 6px;animation:shake .5s linear infinite">🚽</span>
-  <div class="bus-title" style="color:var(--poop);text-shadow:0 0 14px var(--poop)">POOP MISSION:<br>LAUNCH NOW! 💩</div>
+  <div class="bus-title" style="color:var(--poop);text-shadow:0 0 14px var(--poop)">JAXON'S POOP MISSION:<br>LAUNCH NOW! 💩</div>
   <div class="steps-card">
     <div class="step"><span class="step-i">1️⃣</span>Walk to the bathroom</div>
     <div class="step"><span class="step-i">2️⃣</span>Pull down your pants</div>
@@ -510,7 +427,7 @@
     <div class="step"><span class="step-i">5️⃣</span>Wipe well and flush 🚿</div>
     <div class="step"><span class="step-i">6️⃣</span>Wash hands 🧼</div>
   </div>
-  <button class="btn-did" style="background:linear-gradient(160deg,#c87941,#7a4a20);color:#fff;box-shadow:0 0 16px rgba(200,121,65,.3);border:1.5px solid rgba(200,121,65,.4)" onclick="markTrip('poop')">
+  <button class="btn-did" style="background:linear-gradient(155deg,#c87941,#7a4a20);color:#fff;box-shadow:0 0 16px rgba(200,121,65,.3);border:2px solid rgba(200,121,65,.4)" onclick="markTrip('poop')">
     <span style="font-size:26px">✅</span> MISSION COMPLETE! +💎💎
   </button>
 </div>
@@ -521,10 +438,10 @@
   <div class="topbar" style="background:rgba(2,5,20,.9);border-color:var(--bdr2)">
     <button class="btn-back" onclick="skipMath()">← Skip</button>
     <span class="tb-mid" style="color:var(--neon2);text-shadow:0 0 10px var(--neon2)">MATH LAUNCH 🧮</span>
-    <span style="width:55px"></span>
+    <span style="width:60px"></span>
   </div>
   <div class="math-header" id="mathHeader">EARN EXTRA DIAMONDS! 💎</div>
-  <div class="math-sub" id="mathSub">Answer fast for more stars!</div>
+  <div class="math-sub" id="mathSub">Answer fast for more stars, Jaxon!</div>
   <div class="stars-row">
     <span class="star" id="star1">⭐</span>
     <span class="star" id="star2">⭐</span>
@@ -544,9 +461,9 @@
   <div class="topbar" style="background:rgba(1,3,12,.9)">
     <div class="tb-gem">💎 <span id="celebGems">0</span></div>
     <span class="tb-mid">MISSION SUCCESS!</span>
-    <span style="width:55px"></span>
+    <span style="width:60px"></span>
   </div>
-  <div class="celeb-title" id="celebTitle">💧 MISSION COMPLETE! 🎉</div>
+  <div class="celeb-title" id="celebTitle">💧 JAXON'S MISSION COMPLETE! 🎉</div>
   <div class="celeb-rain" id="celebRain"></div>
   <div class="celeb-grid">
     <div class="celeb-card"><div class="celeb-n" id="cTripNum">1</div><div class="celeb-l">mission #<br>today</div></div>
@@ -564,11 +481,11 @@
   <div class="topbar">
     <button class="btn-back" onclick="showScreen('hub')">← Hub</button>
     <span class="tb-mid">📊 MISSION STATS</span>
-    <span style="width:55px"></span>
+    <span style="width:60px"></span>
   </div>
   <div class="brand" style="padding-top:12px">
     <p class="eyebrow">data analysis</p>
-    <h1><span style="font-size:22px">JAXON'S</span><span style="font-size:26px">STATS LAB</span></h1>
+    <h1><span>JAXON'S</span><span>STATS LAB</span></h1>
   </div>
   <div class="graph-wrap">
     <canvas id="graphCanvas" height="160"></canvas>
@@ -593,10 +510,10 @@
   <div class="topbar" style="background:rgba(20,5,0,.9);border-color:rgba(255,119,34,.3)">
     <button class="btn-back" onclick="showScreen('hub')">← Hub</button>
     <span class="tb-mid" style="color:#FF9A30;text-shadow:0 0 10px #FF9A30">🚌 BUS CHECK</span>
-    <span style="width:55px"></span>
+    <span style="width:60px"></span>
   </div>
   <span class="bus-hero">🚌</span>
-  <div class="bus-title">BUS IS COMING!<br>STOP! ✋</div>
+  <div class="bus-title">BUS IS COMING, JAXON!<br>STOP! ✋</div>
   <div class="bus-card">
     Before you get on the bus...<br><br>
     💩 Did you TRY to poop at school?<br>
@@ -604,7 +521,7 @@
     Poop + pee now = safe ride home! ✅
   </div>
   <div class="bus-grid">
-    <button class="bus-yes"  onclick="busYes()">        <span style="font-size:28px">✅</span><br>YES!<br>I WENT!</button>
+    <button class="bus-yes"  onclick="busYes()">           <span style="font-size:28px">✅</span><br>YES!<br>I WENT!</button>
     <button class="bus-nope" onclick="showScreen('bus-go')"><span style="font-size:28px">⏳</span><br>NOT<br>YET...</button>
   </div>
 </div>
@@ -615,7 +532,7 @@
   <div class="topbar" style="background:rgba(20,5,0,.9);border-color:rgba(255,119,34,.3)">
     <button class="btn-back" onclick="showScreen('bus')">← Back</button>
     <span class="tb-mid" style="color:#FF9A30;text-shadow:0 0 10px #FF9A30">GO TRY!</span>
-    <span style="width:55px"></span>
+    <span style="width:60px"></span>
   </div>
   <span class="go-hero">🏃</span>
   <div class="bus-title">GO TRY BEFORE<br>THE BUS LAUNCHES! 💨</div>
@@ -629,9 +546,9 @@
   <div class="topbar">
     <button class="btn-back" onclick="showScreen('hub')">← Hub</button>
     <span class="tb-mid">📱 SHARE CODE</span>
-    <span style="width:55px"></span>
+    <span style="width:60px"></span>
   </div>
-  <div class="qr-title">📡 SCAN TO JOIN<br>THE MISSION!</div>
+  <div class="qr-title">📡 SCAN TO JOIN<br>JAXON'S MISSION!</div>
   <div id="qrcode"></div>
   <div class="qr-url">dacameragirl.github.io/Jaxons_Potty_Time/</div>
 </div>
@@ -642,11 +559,11 @@
   <div class="topbar">
     <button class="btn-back" onclick="showScreen('hub')">← Hub</button>
     <span class="tb-mid">⚙️ MISSION CONTROL</span>
-    <span style="width:55px"></span>
+    <span style="width:60px"></span>
   </div>
   <div class="brand" style="padding-top:12px">
-    <p class="eyebrow">mission configuration</p>
-    <h1><span style="font-size:20px">SETTINGS</span></h1>
+    <p class="eyebrow">configuration</p>
+    <h1><span>JAXON'S</span><span>SETTINGS</span></h1>
   </div>
   <div class="set-row">
     <div class="set-lbl">⏰ Check-in interval<br><small>How often to beep and ask</small></div>
@@ -659,7 +576,7 @@
     </select>
   </div>
   <div class="set-row">
-    <div class="set-lbl">🔊 Voice<br><small>Female voice reads questions aloud</small></div>
+    <div class="set-lbl">🔊 Voice<br><small>Female voice reads aloud</small></div>
     <button class="voice-toggle" id="settingsVoiceBtn" onclick="toggleVoice()">ON</button>
   </div>
   <div class="set-row">
@@ -675,92 +592,88 @@
 
 
 <script>
-/* ══════════════════ STATE ══════════════════ */
-const S = {
-  gems:      +localStorage.getItem('jx_gems')     || 0,
-  totalPee:  +localStorage.getItem('jx_pee')      || 0,
-  totalPoop: +localStorage.getItem('jx_poop')     || 0,
-  lastPee:   +localStorage.getItem('jx_lastPee')  || Date.now(),
-  lastPoop:  +localStorage.getItem('jx_lastPoop') || Date.now(),
-  checkN:    0,
-  checkMs:   (+localStorage.getItem('jx_interval') || 30) * 60_000,
-  mathLevel: +localStorage.getItem('jx_mathLv')   || 3,
-  voiceOn:    localStorage.getItem('jx_voice') !== 'off',
-  pendingType: null,
-  mathCorrect: +localStorage.getItem('jx_mathOk') || 0,
+/* ══════ STATE ══════ */
+const S={
+  gems:      +localStorage.getItem('jx_gems')    ||0,
+  totalPee:  +localStorage.getItem('jx_pee')     ||0,
+  totalPoop: +localStorage.getItem('jx_poop')    ||0,
+  lastPee:   +localStorage.getItem('jx_lastPee') ||Date.now(),
+  lastPoop:  +localStorage.getItem('jx_lastPoop')||Date.now(),
+  checkN:0,
+  checkMs:(+localStorage.getItem('jx_interval')||30)*60_000,
+  mathLevel:+localStorage.getItem('jx_mathLv')||3,
+  voiceOn:localStorage.getItem('jx_voice')!=='off',
+  pendingType:null,
+  mathCorrect:+localStorage.getItem('jx_mathOk')||0,
 };
-const PEE_MS  = 2 * 60 * 60_000;
-const POOP_MS = 7 * 60 * 60_000;
-let checkTimer = null, ciCountdown = null;
-function save(k,v){ localStorage.setItem(k,String(v)); }
+const PEE_MS=2*60*60_000, POOP_MS=7*60*60_000;
+let checkTimer=null,ciCountdown=null;
+function save(k,v){localStorage.setItem(k,String(v));}
 
 /* ── day helpers ── */
-function dayKey(t='pee',d=new Date()){ return `jx_${t}_${d.getFullYear()}_${d.getMonth()}_${d.getDate()}`; }
-function getTodayN(t){ return +localStorage.getItem(dayKey(t))||0; }
-function incToday(t){ const n=getTodayN(t)+1; save(dayKey(t),n); return n; }
+function dayKey(t='pee',d=new Date()){return `jx_${t}_${d.getFullYear()}_${d.getMonth()}_${d.getDate()}`;}
+function getTodayN(t){return +localStorage.getItem(dayKey(t))||0;}
+function incToday(t){const n=getTodayN(t)+1;save(dayKey(t),n);return n;}
 function calcStreak(){
-  let s=0; const now=new Date();
-  for(let i=0;i<90;i++){
-    const d=new Date(now); d.setDate(d.getDate()-i);
-    if((+localStorage.getItem(dayKey('poop',d))||0)>0) s++;
-    else if(i>0) break;
-  } return s;
+  let s=0;const now=new Date();
+  for(let i=0;i<90;i++){const d=new Date(now);d.setDate(d.getDate()-i);if((+localStorage.getItem(dayKey('poop',d))||0)>0)s++;else if(i>0)break;}
+  return s;
 }
-function getBest(){ return +localStorage.getItem('jx_best')||0; }
-function updateBest(s){ if(s>getBest()) save('jx_best',s); return Math.max(s,getBest()); }
-function getTodayTotal(){ return getTodayN('pee')+getTodayN('poop'); }
-function getWeekTotal(){
-  let t=0; const now=new Date();
-  for(let i=0;i<7;i++){ const d=new Date(now); d.setDate(d.getDate()-i); t+=(+localStorage.getItem(dayKey('pee',d))||0)+(+localStorage.getItem(dayKey('poop',d))||0); }
-  return t;
-}
-function getDailyAvg(){ return Math.round(getWeekTotal()/7*10)/10; }
+function getBest(){return +localStorage.getItem('jx_best')||0;}
+function updateBest(s){if(s>getBest())save('jx_best',s);return Math.max(s,getBest());}
+function getTodayTotal(){return getTodayN('pee')+getTodayN('poop');}
+function getWeekTotal(){let t=0;const now=new Date();for(let i=0;i<7;i++){const d=new Date(now);d.setDate(d.getDate()-i);t+=(+localStorage.getItem(dayKey('pee',d))||0)+(+localStorage.getItem(dayKey('poop',d))||0);}return t;}
+function getDailyAvg(){return Math.round(getWeekTotal()/7*10)/10;}
 
-/* ══════════════════ AUDIO ══════════════════ */
+/* ══════ AUDIO ══════ */
 let audioCtx=null;
-function unlockAudio(){
-  if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-  if(audioCtx.state==='suspended') audioCtx.resume();
-}
+function unlockAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();}
 document.addEventListener('touchstart',unlockAudio,{passive:true});
 document.addEventListener('click',unlockAudio,{passive:true});
 function tone(freq,start,dur,vol=0.28,type='square'){
-  if(!audioCtx) return;
+  if(!audioCtx)return;
   const o=audioCtx.createOscillator(),g=audioCtx.createGain();
-  o.connect(g); g.connect(audioCtx.destination);
-  o.type=type; o.frequency.value=freq;
+  o.connect(g);g.connect(audioCtx.destination);o.type=type;o.frequency.value=freq;
   const t=audioCtx.currentTime+start;
-  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+0.03); g.gain.exponentialRampToValueAtTime(0.001,t+dur);
-  o.start(t); o.stop(t+dur+0.01);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+0.03);g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+  o.start(t);o.stop(t+dur+0.01);
 }
-function playCheckBeep(){ unlockAudio(); [523,659,784].forEach((f,i)=>{ tone(f,i*.22,.2); tone(f,.7+i*.22,.2); }); }
-function playSuccess(){ unlockAudio(); [523,659,784,1047].forEach((f,i)=>tone(f,i*.14,.25,.22,'triangle')); }
-function playWrong(){ unlockAudio(); [330,260].forEach((f,i)=>tone(f,i*.18,.3,.2,'sawtooth')); }
+function playCheckBeep(){unlockAudio();[523,659,784].forEach((f,i)=>{tone(f,i*.22,.2);tone(f,.7+i*.22,.2);});}
+function playSuccess(){unlockAudio();[523,659,784,1047].forEach((f,i)=>tone(f,i*.14,.25,.22,'triangle'));}
+function playWrong(){unlockAudio();[330,260].forEach((f,i)=>tone(f,i*.18,.3,.2,'sawtooth'));}
 
-/* ══════════════════ VOICE — female only ══════════════════ */
-function bestVoice(){
-  if(!('speechSynthesis' in window)) return null;
+/* ══════ VOICE — female, cached ══════ */
+let _voice=null;
+function loadVoice(){
+  if(!('speechSynthesis' in window))return;
   const vs=window.speechSynthesis.getVoices();
-  const femaleNames=['Samantha','Karen','Moira','Tessa','Victoria','Ava','Susan','Alice','Fiona',
-                     'Google UK English Female','Google US English Female','Microsoft Zira','Allison'];
-  const byName=femaleNames.map(n=>vs.find(v=>v.name===n)).find(Boolean);
-  if(byName) return byName;
-  const byLabel=vs.find(v=>v.name.toLowerCase().includes('female'));
-  if(byLabel) return byLabel;
-  const notMale=vs.find(v=>!v.name.toLowerCase().includes('male')&&v.lang&&v.lang.startsWith('en'));
-  return notMale||vs.find(v=>v.lang&&v.lang.startsWith('en'))||vs[0]||null;
+  if(!vs.length)return;
+  const names=['Samantha','Karen','Moira','Tessa','Victoria','Ava','Susan','Alice','Fiona',
+               'Google UK English Female','Google US English Female','Microsoft Zira',
+               'Allison','Veena','Nicky'];
+  _voice=names.map(n=>vs.find(v=>v.name===n)).find(Boolean)
+      ||vs.find(v=>v.name.toLowerCase().includes('female'))
+      ||vs.find(v=>v.name.toLowerCase().startsWith('google')&&v.lang.startsWith('en'))
+      ||vs.find(v=>!v.name.toLowerCase().includes('male')&&v.lang&&v.lang.startsWith('en'))
+      ||vs.find(v=>v.lang&&v.lang.startsWith('en'))
+      ||vs[0]||null;
+}
+if('speechSynthesis' in window){
+  loadVoice();
+  window.speechSynthesis.onvoiceschanged=loadVoice;
 }
 function speak(txt){
-  if(!S.voiceOn||!txt||!('speechSynthesis' in window)) return;
+  if(!S.voiceOn||!txt||!('speechSynthesis' in window))return;
+  if(!_voice)loadVoice();
   window.speechSynthesis.cancel();
   const u=new SpeechSynthesisUtterance(txt);
-  u.voice=bestVoice(); u.rate=0.88; u.pitch=1.25; u.volume=1;
+  u.voice=_voice; u.rate=0.9; u.pitch=1.5; u.volume=1;
   window.speechSynthesis.speak(u);
 }
 function toggleVoice(){
-  S.voiceOn=!S.voiceOn; save('jx_voice',S.voiceOn?'on':'off');
+  S.voiceOn=!S.voiceOn;save('jx_voice',S.voiceOn?'on':'off');
   updateVoiceUI();
-  speak(S.voiceOn?'Voice on!':'Voice off.');
+  speak(S.voiceOn?'Voice on, Jaxon!':'Voice off.');
 }
 function updateVoiceUI(){
   const on=S.voiceOn;
@@ -771,111 +684,95 @@ function updateVoiceUI(){
   document.getElementById('settingsVoiceBtn').classList.toggle('muted',!on);
 }
 
-/* ══════════════════ STARFIELD CANVAS ══════════════════ */
+/* ══════ STARFIELD CANVAS ══════ */
 (function(){
   const canvas=document.getElementById('bgCanvas');
   const ctx=canvas.getContext('2d');
   let W,H,stars=[],particles=[];
   const CHARS='0123456789💧💩💎🚀⭐∑π√∞';
-  function genStars(){
-    stars=Array.from({length:220},()=>({
-      x:Math.random()*W, y:Math.random()*H,
-      r:Math.random()*1.4+0.2,
-      a:Math.random()*0.75+0.15,
-      spd:Math.random()*0.04+0.01,
-      ph:Math.random()*Math.PI*2
-    }));
-  }
-  function mkP(){ return { x:Math.random()*W, y:H+20, s:11+Math.random()*16, sp:0.18+Math.random()*.38, a:Math.random()*.12+.025, ch:CHARS[Math.floor(Math.random()*CHARS.length)] }; }
+  function genStars(){stars=Array.from({length:220},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.4+.2,a:Math.random()*.75+.15,spd:Math.random()*.04+.01,ph:Math.random()*Math.PI*2}));}
+  function mkP(){return{x:Math.random()*W,y:H+20,s:11+Math.random()*16,sp:.18+Math.random()*.38,a:Math.random()*.12+.025,ch:CHARS[Math.floor(Math.random()*CHARS.length)]};}
   let t=0;
   function loop(){
-    ctx.clearRect(0,0,W,H); t+=0.012;
-    stars.forEach(s=>{
-      const alpha=s.a*(0.6+0.4*Math.sin(t*s.spd*8+s.ph));
-      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-      ctx.fillStyle=`rgba(190,220,255,${alpha})`; ctx.fill();
-    });
-    if(particles.length<18&&Math.random()<.035) particles.push(mkP());
-    particles=particles.filter(p=>{
-      p.y-=p.sp; ctx.globalAlpha=p.a;
-      ctx.font=`${p.s}px Nunito,sans-serif`;
-      ctx.fillStyle='#00d4ff'; ctx.fillText(p.ch,p.x,p.y);
-      return p.y>-30;
-    });
-    ctx.globalAlpha=1; requestAnimationFrame(loop);
+    ctx.clearRect(0,0,W,H);t+=.012;
+    stars.forEach(s=>{const alpha=s.a*(.6+.4*Math.sin(t*s.spd*8+s.ph));ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(190,220,255,${alpha})`;ctx.fill();});
+    if(particles.length<18&&Math.random()<.035)particles.push(mkP());
+    particles=particles.filter(p=>{p.y-=p.sp;ctx.globalAlpha=p.a;ctx.font=`${p.s}px Nunito,sans-serif`;ctx.fillStyle='#00d4ff';ctx.fillText(p.ch,p.x,p.y);return p.y>-30;});
+    ctx.globalAlpha=1;requestAnimationFrame(loop);
   }
-  function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; genStars(); }
-  window.addEventListener('resize',resize); resize(); loop();
+  function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;genStars();}
+  window.addEventListener('resize',resize);resize();loop();
 })();
 
-/* ══════════════════ CURSOR TRAIL ══════════════════ */
+/* ══════ CURSOR TRAIL ══════ */
 (function(){
   const trail=document.getElementById('cursorTrail');
-  function spark(x,y){
-    const el=document.createElement('span');
-    el.textContent=['✨','💎','⭐','🚀'][Math.floor(Math.random()*4)];
-    el.style.cssText=`position:absolute;left:${x-12}px;top:${y-12}px;font-size:16px;pointer-events:none;animation:cpFall .8s linear forwards;opacity:1`;
-    trail.appendChild(el); setTimeout(()=>el.remove(),800);
-  }
-  document.addEventListener('touchstart',e=>{ for(const t of e.changedTouches) spark(t.clientX,t.clientY); },{passive:true});
+  function spark(x,y){const el=document.createElement('span');el.textContent=['✨','💎','⭐','🚀'][Math.floor(Math.random()*4)];el.style.cssText=`position:absolute;left:${x-12}px;top:${y-12}px;font-size:16px;pointer-events:none;animation:cpFall .8s linear forwards;opacity:1`;trail.appendChild(el);setTimeout(()=>el.remove(),800);}
+  document.addEventListener('touchstart',e=>{for(const t of e.changedTouches)spark(t.clientX,t.clientY);},{passive:true});
 })();
 
-/* ══════════════════ METERS & CLOCKS ══════════════════ */
-function fmtTime(ms){ const s=Math.floor(ms/1000),m=Math.floor(s/60),h=Math.floor(m/60); return `${String(h).padStart(2,'0')}:${String(m%60).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
+/* ══════ METERS & CLOCKS ══════ */
+function fmtTime(ms){const s=Math.floor(ms/1000),m=Math.floor(s/60),h=Math.floor(m/60);return `${String(h).padStart(2,'0')}:${String(m%60).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
 function updateMeters(){
-  const pe=Date.now()-S.lastPee, pp=Date.now()-S.lastPoop;
-  const peePct=Math.min(pe/PEE_MS,1), poopPct=Math.min(pp/POOP_MS,1);
-  const pc=document.getElementById('peeClockDisp'), ps=document.getElementById('peeClockSub');
-  pc.textContent=fmtTime(pe); pc.className='dig-clock'+(peePct>.7?' warn':peePct>.9?' alert':'');
+  const pe=Date.now()-S.lastPee,pp=Date.now()-S.lastPoop;
+  const peePct=Math.min(pe/PEE_MS,1),poopPct=Math.min(pp/POOP_MS,1);
+  const pc=document.getElementById('peeClockDisp'),ps=document.getElementById('peeClockSub');
+  pc.textContent=fmtTime(pe);pc.className='dig-clock'+(peePct>.9?' alert':peePct>.7?' warn':'');
   ps.textContent=peePct<.4?'all systems go 😊':peePct<.75?'tank filling…':'⚠️ need to pee soon!';
-  const oc=document.getElementById('poopClockDisp'), os=document.getElementById('poopClockSub');
-  oc.textContent=fmtTime(pp); oc.className='dig-clock'+(poopPct>.7?' warn':poopPct>.9?' alert':'');
+  const oc=document.getElementById('poopClockDisp'),os=document.getElementById('poopClockSub');
+  oc.textContent=fmtTime(pp);oc.className='dig-clock'+(poopPct>.9?' alert':poopPct>.7?' warn':'');
   os.textContent=poopPct<.4?'mission status: green 😊':poopPct<.75?'pressure building…':'⚠️ creeper about to explode!';
   document.getElementById('peeMeterFill').style.width=Math.round(peePct*100)+'%';
   document.getElementById('peeMeterMsg').textContent=peePct<.4?'Tank empty. No worries. 😊':peePct<.75?`Tank at ${Math.round(peePct*100)}% — think about going soon!`:`⚠️ Tank almost full! Go pee! (${Math.round(peePct*100)}%)`;
   document.getElementById('poopMeterFill').style.width=Math.round(poopPct*100)+'%';
   document.getElementById('poopMeterMsg').textContent=poopPct<.4?'Pressure nominal. Creeper chill. 😊':poopPct<.75?`Pressure at ${Math.round(poopPct*100)}% — maybe try going soon!`:`⚠️ Creeper about to explode! (${Math.round(poopPct*100)}%)`;
-  if(poopPct>=.95) fireAlert('💥 POOP EMERGENCY!<br>GET TO THE TOILET NOW!');
-  else if(peePct>=.97) fireAlert('💧 BLADDER FULL!<br>GO PEE RIGHT NOW!');
+  if(poopPct>=.95)fireAlert('💥 POOP EMERGENCY, JAXON!<br>GET TO THE TOILET NOW!');
+  else if(peePct>=.97)fireAlert('💧 BLADDER FULL!<br>GO PEE RIGHT NOW, JAXON!');
 }
 let alertActive=false;
-function fireAlert(msg){ if(alertActive) return; alertActive=true; document.getElementById('alertMsg').innerHTML=msg; document.getElementById('alertOverlay').classList.add('show'); playCheckBeep(); speak(msg.replace(/<br>/g,' ').replace(/<[^>]+>/g,'')); }
-function goNow(){ document.getElementById('alertOverlay').classList.remove('show'); alertActive=false; showScreen('poop'); }
+function fireAlert(msg){if(alertActive)return;alertActive=true;document.getElementById('alertMsg').innerHTML=msg;document.getElementById('alertOverlay').classList.add('show');playCheckBeep();speak(msg.replace(/<br>/g,' ').replace(/<[^>]+>/g,''));}
+function goNow(){document.getElementById('alertOverlay').classList.remove('show');alertActive=false;showScreen('poop');}
 
-/* ══════════════════ COUNTDOWN ══════════════════ */
+/* ══════ COUNTDOWN ══════ */
 let cdEnd=Date.now()+S.checkMs;
-function updateCountdown(){ const rem=Math.max(0,cdEnd-Date.now()); const m=Math.floor(rem/60_000),sec=Math.floor((rem%60_000)/1000); const el=document.getElementById('cdDisplay'); el.textContent=`${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; el.className='cd-time'+(rem<5*60_000?' warn':'')+(rem<60_000?' urgent':''); }
+function updateCountdown(){
+  const rem=Math.max(0,cdEnd-Date.now());
+  const m=Math.floor(rem/60_000),sec=Math.floor((rem%60_000)/1000);
+  const el=document.getElementById('cdDisplay');
+  el.textContent=`${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  el.className='quick-n'+(rem<60_000?' qn-urgent':rem<5*60_000?' qn-warn':'');
+}
 
-/* ══════════════════ CHECK-IN ══════════════════ */
-function scheduleCheck(ms=S.checkMs){ if(checkTimer) clearTimeout(checkTimer); cdEnd=Date.now()+ms; checkTimer=setTimeout(fireCheck,ms); }
+/* ══════ CHECK-IN ══════ */
+function scheduleCheck(ms=S.checkMs){if(checkTimer)clearTimeout(checkTimer);cdEnd=Date.now()+ms;checkTimer=setTimeout(fireCheck,ms);}
 function fireCheck(){
-  S.checkN++; document.getElementById('ciNum').textContent=S.checkN;
+  S.checkN++;document.getElementById('ciNum').textContent=S.checkN;
   document.getElementById('checkIn').classList.add('show');
   playCheckBeep();
-  speak('Mission check! How is Jaxon feeling right now?');
-  if(typeof Notification!=='undefined'&&Notification.permission==='granted') new Notification('⏰ Mission Check!',{body:'How is Jaxon feeling? Open the app!',requireInteraction:true});
-  let w=100; if(ciCountdown) clearInterval(ciCountdown);
+  speak('Jaxon, mission check! How are you feeling right now?');
+  if(typeof Notification!=='undefined'&&Notification.permission==='granted')new Notification('⏰ Mission Check!',{body:'Jaxon, how are you feeling? Open the app!',requireInteraction:true});
+  let w=100;if(ciCountdown)clearInterval(ciCountdown);
   document.getElementById('ciFill').style.width='100%';
-  ciCountdown=setInterval(()=>{ w=Math.max(0,w-100/300); document.getElementById('ciFill').style.width=w+'%'; if(w<=0){clearInterval(ciCountdown);ciCountdown=null;} },100);
+  ciCountdown=setInterval(()=>{w=Math.max(0,w-100/300);document.getElementById('ciFill').style.width=w+'%';if(w<=0){clearInterval(ciCountdown);ciCountdown=null;}},100);
 }
 function ciAns(ans){
   if(ciCountdown){clearInterval(ciCountdown);ciCountdown=null;}
   document.getElementById('checkIn').classList.remove('show');
   if(ans==='pee'){showScreen('go-pee');scheduleCheck();}
   else if(ans==='poop'){showScreen('go-poop');scheduleCheck();}
-  else if(ans==='maybe'){scheduleCheck(10*60_000);speak('OK! Checking again in 10 minutes.');}
-  else{scheduleCheck();speak('All clear! See you in '+Math.round(S.checkMs/60_000)+' minutes.');}
+  else if(ans==='maybe'){scheduleCheck(10*60_000);speak('OK, Jaxon! Checking again in 10 minutes.');}
+  else{scheduleCheck();speak('All clear, Jaxon! See you in '+Math.round(S.checkMs/60_000)+' minutes.');}
 }
 
-/* ══════════════════ MARK TRIP ══════════════════ */
+/* ══════ MARK TRIP ══════ */
 function markTrip(type){
-  if(type==='pee'){ S.lastPee=Date.now(); save('jx_lastPee',S.lastPee); S.totalPee++; save('jx_pee',S.totalPee); S.gems++; save('jx_gems',S.gems); incToday('pee'); }
-  else { S.lastPoop=Date.now(); save('jx_lastPoop',S.lastPoop); S.totalPoop++; save('jx_poop',S.totalPoop); S.gems+=2; save('jx_gems',S.gems); incToday('poop'); }
-  alertActive=false; document.getElementById('alertOverlay').classList.remove('show');
-  S.pendingType=type; scheduleCheck(); checkAchievements(); launchMath(type);
+  if(type==='pee'){S.lastPee=Date.now();save('jx_lastPee',S.lastPee);S.totalPee++;save('jx_pee',S.totalPee);S.gems++;save('jx_gems',S.gems);incToday('pee');}
+  else{S.lastPoop=Date.now();save('jx_lastPoop',S.lastPoop);S.totalPoop++;save('jx_poop',S.totalPoop);S.gems+=2;save('jx_gems',S.gems);incToday('poop');}
+  alertActive=false;document.getElementById('alertOverlay').classList.remove('show');
+  S.pendingType=type;scheduleCheck();checkAchievements();launchMath(type);
 }
 
-/* ══════════════════ MATH ENGINE ══════════════════ */
+/* ══════ MATH ENGINE ══════ */
 const PRIMES=[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97];
 let mathTimer=null,mathStart=0;
 function nextPrime(n){return PRIMES.find(p=>p>n)||101;}
@@ -893,7 +790,7 @@ function genQ(level=3){
     ()=>{const n=rnd(3,7),ans=Array.from({length:n},(_,i)=>i+1).reduce((a,b)=>a*b,1);const w=[ans-rnd(1,3),ans+rnd(1,5),ans-1,ans*2].filter(x=>x>0&&x!==ans);return{q:`${n}! (factorial) = ?`,a:ans,w};},
   ];
   const pick=level<=1?ops.slice(0,2):level===2?ops.slice(0,4):ops;
-  let q;do{q=pick[rnd(0,pick.length-1)]();}while(!q); return q;
+  let q;do{q=pick[rnd(0,pick.length-1)]();}while(!q);return q;
 }
 function launchMath(type){
   S.pendingType=type;
@@ -904,41 +801,41 @@ function launchMath(type){
   document.getElementById('mathTimerFill').style.width='100%';
   ['star1','star2','star3'].forEach(id=>document.getElementById(id).classList.remove('lit'));
   const all=shuffle([q.a,...q.w.slice(0,3)]);
-  const box=document.getElementById('mathChoices'); box.innerHTML='';
-  all.forEach(opt=>{ const btn=document.createElement('button'); btn.className='math-choice'; btn.textContent=opt; btn.onclick=()=>answerMath(opt===q.a,btn,q.a,type); box.appendChild(btn); });
+  const box=document.getElementById('mathChoices');box.innerHTML='';
+  all.forEach(opt=>{const btn=document.createElement('button');btn.className='math-choice';btn.textContent=opt;btn.onclick=()=>answerMath(opt===q.a,btn,q.a,type);box.appendChild(btn);});
   mathStart=Date.now();
-  if(mathTimer) clearInterval(mathTimer);
+  if(mathTimer)clearInterval(mathTimer);
   const dur=18000;
-  mathTimer=setInterval(()=>{ const pct=Math.max(0,1-(Date.now()-mathStart)/dur)*100; document.getElementById('mathTimerFill').style.width=pct+'%'; if(pct<=0){clearInterval(mathTimer);skipMath();} },100);
+  mathTimer=setInterval(()=>{const pct=Math.max(0,1-(Date.now()-mathStart)/dur)*100;document.getElementById('mathTimerFill').style.width=pct+'%';if(pct<=0){clearInterval(mathTimer);skipMath();}},100);
   speak(q.q.replace(/\n/g,' '));
   showScreen('math');
 }
-function launchMathPractice(){ S.pendingType='practice'; launchMath('practice'); }
+function launchMathPractice(){S.pendingType='practice';launchMath('practice');}
 function answerMath(correct,btn,correctAns,type){
   if(mathTimer){clearInterval(mathTimer);mathTimer=null;}
   const elapsed=(Date.now()-mathStart)/1000;
   [...document.querySelectorAll('.math-choice')].forEach(b=>{b.disabled=true;if(+b.textContent===correctAns)b.classList.add('correct');});
-  if(!correct) btn.classList.add('wrong');
+  if(!correct)btn.classList.add('wrong');
   if(correct){
     playSuccess();
     const stars=elapsed<=5?3:elapsed<=10?2:1;
-    for(let i=1;i<=stars;i++) document.getElementById('star'+i).classList.add('lit');
+    for(let i=1;i<=stars;i++)document.getElementById('star'+i).classList.add('lit');
     const bonus=type==='poop'?stars*2:stars;
-    S.gems+=bonus; save('jx_gems',S.gems); S.mathCorrect++; save('jx_mathOk',S.mathCorrect);
-    speak(`Correct! You earned ${bonus} bonus diamond${bonus>1?'s':''}!`);
+    S.gems+=bonus;save('jx_gems',S.gems);S.mathCorrect++;save('jx_mathOk',S.mathCorrect);
+    speak(`Correct, Jaxon! You earned ${bonus} bonus diamond${bonus>1?'s':''}!`);
     setTimeout(()=>showCelebrate(type),900);
-  } else {
+  }else{
     playWrong();
-    speak(`Not quite! The answer was ${correctAns}. Keep going!`);
+    speak(`Not quite, Jaxon! The answer was ${correctAns}. You've got this!`);
     setTimeout(()=>showCelebrate(type),1300);
   }
 }
-function skipMath(){ if(mathTimer){clearInterval(mathTimer);mathTimer=null;} if(S.pendingType&&S.pendingType!=='practice') showCelebrate(S.pendingType); else showScreen('hub'); }
+function skipMath(){if(mathTimer){clearInterval(mathTimer);mathTimer=null;}if(S.pendingType&&S.pendingType!=='practice')showCelebrate(S.pendingType);else showScreen('hub');}
 
-/* ══════════════════ CELEBRATE ══════════════════ */
+/* ══════ CELEBRATE ══════ */
 function showCelebrate(type){
   const streak=calcStreak(),best=updateBest(streak),total=S.totalPee+S.totalPoop,tripToday=getTodayTotal();
-  document.getElementById('celebTitle').textContent=type==='poop'?'💩 POOP MISSION COMPLETE! 🎉':'💧 PEE MISSION COMPLETE! 🎉';
+  document.getElementById('celebTitle').textContent=type==='poop'?'💩 JAXON\'S POOP MISSION COMPLETE! 🎉':'💧 JAXON\'S PEE MISSION COMPLETE! 🎉';
   document.getElementById('celebGems').textContent=S.gems;
   document.getElementById('cTripNum').textContent=tripToday;
   document.getElementById('cTotal').textContent=total;
@@ -953,16 +850,16 @@ function showCelebrate(type){
   ];
   document.getElementById('celebMath').textContent=facts[total%facts.length];
   playSuccess();
-  speak(type==='poop'?'Amazing! Poop mission complete! Creeper saved!':'Great job! Pee mission complete!');
-  showScreen('celebrate'); spawnRain(type); updateDisplay();
+  speak(type==='poop'?'Amazing work, Jaxon! Poop mission complete! Creeper saved!':'Great job, Jaxon! Pee mission complete!');
+  showScreen('celebrate');spawnRain(type);updateDisplay();
 }
 function spawnRain(type){
-  const rain=document.getElementById('celebRain'); rain.innerHTML='';
+  const rain=document.getElementById('celebRain');rain.innerHTML='';
   const items=type==='poop'?['💩','💎','💥','⭐','🚀']:['💧','💎','✨','⭐','🌟'];
-  for(let i=0;i<28;i++){ const el=document.createElement('span'); el.className='cp'; el.textContent=items[i%items.length]; el.style.left=Math.random()*92+'%'; el.style.fontSize=(12+Math.random()*22)+'px'; el.style.animationDuration=(0.5+Math.random()*1.5)+'s'; el.style.animationDelay=(Math.random()*2)+'s'; rain.appendChild(el); }
+  for(let i=0;i<28;i++){const el=document.createElement('span');el.className='cp';el.textContent=items[i%items.length];el.style.left=Math.random()*92+'%';el.style.fontSize=(12+Math.random()*22)+'px';el.style.animationDuration=(.5+Math.random()*1.5)+'s';el.style.animationDelay=(Math.random()*2)+'s';rain.appendChild(el);}
 }
 
-/* ══════════════════ ACHIEVEMENTS ══════════════════ */
+/* ══════ ACHIEVEMENTS ══════ */
 const ACHIEVEMENTS=[
   {id:'first',  icon:'🏅',name:'First Mission!',        check:()=>S.totalPee+S.totalPoop>=1},
   {id:'ten',    icon:'🔟',name:'10 Total Missions!',     check:()=>S.totalPee+S.totalPoop>=10},
@@ -974,66 +871,69 @@ const ACHIEVEMENTS=[
   {id:'math10', icon:'🧮',name:'10 Math Questions!',     check:()=>S.mathCorrect>=10},
   {id:'gems50', icon:'💎',name:'50 Diamonds Earned!',    check:()=>S.gems>=50},
 ];
-function checkAchievements(){ ACHIEVEMENTS.forEach(a=>{ if(!localStorage.getItem('jx_ach_'+a.id)&&a.check()){ localStorage.setItem('jx_ach_'+a.id,'1'); showAchievement(a); } }); }
+function checkAchievements(){ACHIEVEMENTS.forEach(a=>{if(!localStorage.getItem('jx_ach_'+a.id)&&a.check()){localStorage.setItem('jx_ach_'+a.id,'1');showAchievement(a);}});}
 let achQueue=[],achShowing=false;
-function showAchievement(a){ achQueue.push(a); if(!achShowing) nextAch(); }
-function nextAch(){ if(!achQueue.length){achShowing=false;return;} achShowing=true; const a=achQueue.shift(); document.getElementById('atIcon').textContent=a.icon; document.getElementById('atName').textContent=a.name; const toast=document.getElementById('achieveToast'); toast.classList.add('show'); speak('Achievement unlocked! '+a.name); setTimeout(()=>{toast.classList.remove('show');setTimeout(nextAch,500);},3000); }
+function showAchievement(a){achQueue.push(a);if(!achShowing)nextAch();}
+function nextAch(){if(!achQueue.length){achShowing=false;return;}achShowing=true;const a=achQueue.shift();document.getElementById('atIcon').textContent=a.icon;document.getElementById('atName').textContent=a.name;const toast=document.getElementById('achieveToast');toast.classList.add('show');speak('Achievement unlocked, Jaxon! '+a.name);setTimeout(()=>{toast.classList.remove('show');setTimeout(nextAch,500);},3000);}
 
-/* ══════════════════ BUS ══════════════════ */
-function busYes(){ markTrip('poop'); }
-function busDidGo(){ markTrip('poop'); }
+/* ══════ BUS ══════ */
+function busYes(){markTrip('poop');}
+function busDidGo(){markTrip('poop');}
 
-/* ══════════════════ STATS GRAPH ══════════════════ */
+/* ══════ STATS GRAPH ══════ */
 function drawGraph(){
-  const canvas=document.getElementById('graphCanvas'); const ctx=canvas.getContext('2d');
-  const W=canvas.offsetWidth; canvas.width=W; canvas.height=160;
-  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat']; const now=new Date();
-  const data=Array.from({length:7},(_,i)=>{ const d=new Date(now); d.setDate(d.getDate()-6+i); return{label:days[d.getDay()],pee:+localStorage.getItem(dayKey('pee',d))||0,poop:+localStorage.getItem(dayKey('poop',d))||0}; });
+  const canvas=document.getElementById('graphCanvas');const ctx=canvas.getContext('2d');
+  const W=canvas.offsetWidth;canvas.width=W;canvas.height=160;
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];const now=new Date();
+  const data=Array.from({length:7},(_,i)=>{const d=new Date(now);d.setDate(d.getDate()-6+i);return{label:days[d.getDay()],pee:+localStorage.getItem(dayKey('pee',d))||0,poop:+localStorage.getItem(dayKey('poop',d))||0};});
   const maxVal=Math.max(...data.map(d=>d.pee+d.poop),4);
   const padL=28,padR=8,padT=14,padB=30,gW=W-padL-padR,gH=160-padT-padB;
   ctx.clearRect(0,0,W,160);
-  ctx.strokeStyle='rgba(0,212,255,.1)'; ctx.lineWidth=1;
-  for(let i=0;i<=4;i++){ const y=padT+gH-(i/4)*gH; ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(padL+gW,y); ctx.stroke(); ctx.fillStyle='rgba(0,212,255,.4)'; ctx.font='8px Nunito'; ctx.fillText(Math.round(maxVal*i/4),2,y+3); }
+  ctx.strokeStyle='rgba(0,212,255,.1)';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){const y=padT+gH-(i/4)*gH;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(padL+gW,y);ctx.stroke();ctx.fillStyle='rgba(0,212,255,.4)';ctx.font='8px Nunito';ctx.fillText(Math.round(maxVal*i/4),2,y+3);}
   const bW=Math.floor(gW/7*.55),gap=gW/7;
-  data.forEach((d,i)=>{ const x=padL+i*gap+(gap-bW)/2; const peH=d.pee?Math.max(4,(d.pee/maxVal)*gH):0; const poH=d.poop?Math.max(4,(d.poop/maxVal)*gH):0; const hw=Math.floor(bW/2)-1;
-    ctx.fillStyle='#ffd000'; ctx.shadowColor='#ffd000'; ctx.shadowBlur=6; ctx.fillRect(x,padT+gH-peH,hw,peH);
-    ctx.fillStyle='#c87941'; ctx.shadowColor='#c87941'; ctx.shadowBlur=6; ctx.fillRect(x+hw+1,padT+gH-poH,hw,poH);
-    ctx.shadowBlur=0; ctx.fillStyle='rgba(0,212,255,.6)'; ctx.font='bold 9px Nunito'; ctx.textAlign='center'; ctx.fillText(d.label,x+bW/2,padT+gH+14);
+  data.forEach((d,i)=>{const x=padL+i*gap+(gap-bW)/2;const peH=d.pee?Math.max(4,(d.pee/maxVal)*gH):0;const poH=d.poop?Math.max(4,(d.poop/maxVal)*gH):0;const hw=Math.floor(bW/2)-1;
+    ctx.fillStyle='#ffd000';ctx.shadowColor='#ffd000';ctx.shadowBlur=6;ctx.fillRect(x,padT+gH-peH,hw,peH);
+    ctx.fillStyle='#c87941';ctx.shadowColor='#c87941';ctx.shadowBlur=6;ctx.fillRect(x+hw+1,padT+gH-poH,hw,poH);
+    ctx.shadowBlur=0;ctx.fillStyle='rgba(0,212,255,.6)';ctx.font='bold 9px Nunito';ctx.textAlign='center';ctx.fillText(d.label,x+bW/2,padT+gH+14);
   });
   ctx.textAlign='left';
   const streak=calcStreak(),best=updateBest(streak);
-  document.getElementById('recTotalPee').textContent=S.totalPee; document.getElementById('recTotalPoop').textContent=S.totalPoop;
-  document.getElementById('recStreak').textContent=streak; document.getElementById('recBest').textContent=best;
-  document.getElementById('recThisWeek').textContent=getWeekTotal(); document.getElementById('recAvg').textContent=getDailyAvg();
+  document.getElementById('recTotalPee').textContent=S.totalPee;document.getElementById('recTotalPoop').textContent=S.totalPoop;
+  document.getElementById('recStreak').textContent=streak;document.getElementById('recBest').textContent=best;
+  document.getElementById('recThisWeek').textContent=getWeekTotal();document.getElementById('recAvg').textContent=getDailyAvg();
 }
 
-/* ══════════════════ NAVIGATION ══════════════════ */
-function showScreen(name){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('screen-'+name).classList.add('active'); window.scrollTo(0,0); if(name==='stats') drawGraph(); }
+/* ══════ NAVIGATION ══════ */
+function showScreen(name){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+name).classList.add('active');window.scrollTo(0,0);if(name==='stats')drawGraph();}
 
-/* ══════════════════ DISPLAY ══════════════════ */
+/* ══════ DISPLAY ══════ */
 function updateDisplay(){
-  const streak=calcStreak(),best=updateBest(streak),today=getTodayTotal();
-  document.getElementById('hubGems').textContent=S.gems; document.getElementById('hubGems2').textContent=S.gems;
-  document.getElementById('hubTotalPee').textContent=S.totalPee; document.getElementById('hubTotalPoop').textContent=S.totalPoop;
-  document.getElementById('hubToday').textContent=today; document.getElementById('hubStreak').textContent=streak; document.getElementById('hubBest').textContent=best;
+  const streak=calcStreak(),today=getTodayTotal();
+  updateBest(streak);
+  document.getElementById('hubGems').textContent=S.gems;
+  document.getElementById('hubTotal').textContent=S.totalPee+S.totalPoop;
+  document.getElementById('hubTotalPee').textContent=S.totalPee;
+  document.getElementById('hubTotalPoop').textContent=S.totalPoop;
+  document.getElementById('hubToday').textContent=today;
+  document.getElementById('hubStreak').textContent=streak;
 }
 
-/* ══════════════════ SETTINGS ══════════════════ */
-function saveInterval(){ const v=+document.getElementById('intervalSel').value; S.checkMs=v*60_000; save('jx_interval',v); scheduleCheck(); }
-function saveMathLevel(){ S.mathLevel=+document.getElementById('mathLevelSel').value; save('jx_mathLv',S.mathLevel); }
-function confirmReset(){ if(confirm('Reset ALL stats? This cannot be undone!')){ ['jx_gems','jx_pee','jx_poop','jx_lastPee','jx_lastPoop','jx_best','jx_mathOk'].forEach(k=>localStorage.removeItem(k)); ACHIEVEMENTS.forEach(a=>localStorage.removeItem('jx_ach_'+a.id)); const now=new Date(); for(let i=0;i<90;i++){const d=new Date(now);d.setDate(d.getDate()-i);['pee','poop'].forEach(t=>localStorage.removeItem(dayKey(t,d)));} location.reload(); } }
+/* ══════ SETTINGS ══════ */
+function saveInterval(){const v=+document.getElementById('intervalSel').value;S.checkMs=v*60_000;save('jx_interval',v);scheduleCheck();}
+function saveMathLevel(){S.mathLevel=+document.getElementById('mathLevelSel').value;save('jx_mathLv',S.mathLevel);}
+function confirmReset(){if(confirm('Reset ALL of Jaxon\'s stats? This cannot be undone!')){['jx_gems','jx_pee','jx_poop','jx_lastPee','jx_lastPoop','jx_best','jx_mathOk'].forEach(k=>localStorage.removeItem(k));ACHIEVEMENTS.forEach(a=>localStorage.removeItem('jx_ach_'+a.id));const now=new Date();for(let i=0;i<90;i++){const d=new Date(now);d.setDate(d.getDate()-i);['pee','poop'].forEach(t=>localStorage.removeItem(dayKey(t,d)));}location.reload();}}
 
-/* ══════════════════ INIT ══════════════════ */
+/* ══════ INIT ══════ */
 function init(){
   document.getElementById('intervalSel').value=String(Math.round(S.checkMs/60_000));
   document.getElementById('mathLevelSel').value=String(S.mathLevel);
-  updateDisplay(); updateVoiceUI(); updateMeters();
-  setInterval(updateMeters,5_000); setInterval(updateCountdown,1_000);
+  updateDisplay();updateVoiceUI();updateMeters();
+  setInterval(updateMeters,5_000);setInterval(updateCountdown,1_000);
   scheduleCheck();
   new QRCode(document.getElementById('qrcode'),{text:'https://dacameragirl.github.io/Jaxons_Potty_Time/',width:220,height:220,colorDark:'#03080f',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
-  if(typeof Notification!=='undefined'&&Notification.permission==='default') Notification.requestPermission();
-  if('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged=()=>{};
-  speak("Welcome to Jaxon's Toilet Mission! Genius plus mode activated!");
+  if(typeof Notification!=='undefined'&&Notification.permission==='default')Notification.requestPermission();
+  speak("Welcome, Jaxon! Your toilet mission is ready. Genius plus mode activated!");
 }
 init();
 </script>

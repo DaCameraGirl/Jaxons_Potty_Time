@@ -455,6 +455,49 @@
       font-family:"Nunito"; font-size:10px; font-weight:700;
       color:var(--stone); text-align:center; padding:0 20px 20px; line-height:2;
     }
+
+    /* ═════ 30-MIN CHECK-IN OVERLAY ═════ */
+    #checkIn {
+      display:none; position:fixed; inset:0; z-index:8888;
+      background:rgba(10,30,26,0.93); backdrop-filter:blur(6px);
+      flex-direction:column; align-items:center; justify-content:center;
+      text-align:center; padding:20px;
+    }
+    #checkIn.show { display:flex; }
+    .ci-ring {
+      font-size:70px; animation:ciRing .4s ease-in-out infinite alternate;
+      margin-bottom:8px;
+    }
+    @keyframes ciRing { from{transform:rotate(-15deg) scale(1)} to{transform:rotate(15deg) scale(1.1)} }
+    .ci-title {
+      font-family:"Baloo 2"; font-size:clamp(18px,5.5vw,24px); font-weight:800;
+      color:var(--diamond); line-height:1.5; margin-bottom:4px;
+      text-shadow:0 0 20px var(--aqua);
+    }
+    .ci-sub {
+      font-family:"Nunito"; font-size:13px; font-weight:700;
+      color:rgba(255,255,255,.7); margin-bottom:20px; line-height:1.6;
+    }
+    .ci-timer {
+      font-family:"Baloo 2"; font-size:11px; font-weight:700;
+      color:var(--water); letter-spacing:1px; margin-bottom:16px;
+    }
+    .ci-btn {
+      font-family:"Baloo 2"; font-weight:800; border:none; cursor:pointer;
+      border-radius:14px; padding:18px 20px; font-size:14px;
+      width:100%; max-width:340px; margin:6px auto;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      box-shadow:0 4px 0 rgba(0,0,0,.3);
+      transition:transform .1s, box-shadow .1s;
+    }
+    .ci-btn:active { transform:translateY(3px); box-shadow:0 1px 0 rgba(0,0,0,.3); }
+    .ci-btn-red    { background:linear-gradient(160deg,#ff5a30,#cc2200); color:#fff; }
+    .ci-btn-gold   { background:linear-gradient(160deg,#fcce38,#e8a000); color:#102c2f; }
+    .ci-btn-green  { background:linear-gradient(160deg,#3de589,#1faa56); color:#fff; }
+    .ci-next {
+      font-family:"Nunito"; font-size:10px; font-weight:700;
+      color:rgba(255,255,255,.35); margin-top:14px;
+    }
   </style>
 </head>
 <body>
@@ -466,6 +509,26 @@
   <span class="voxel v-dirt blk-c"></span>
   <span class="voxel v-stone blk-d"></span>
   <span class="voxel v-diamond blk-e"></span>
+</div>
+
+<!-- ═══ 30-MIN CHECK-IN ═══ -->
+<div id="checkIn">
+  <span class="ci-ring">⏰</span>
+  <div class="ci-title">POOP CHECK TIME!</div>
+  <div class="ci-sub">How is Jaxon's tummy<br>feeling right now?</div>
+  <div class="ci-timer" id="ciTimer">Check #<span id="ciCount">1</span></div>
+
+  <button class="ci-btn ci-btn-red" onclick="ciAnswer('need')">
+    <span style="font-size:26px">🚨</span> I NEED TO GO!
+  </button>
+  <button class="ci-btn ci-btn-gold" onclick="ciAnswer('maybe')">
+    <span style="font-size:26px">😐</span> MAYBE SOON...
+  </button>
+  <button class="ci-btn ci-btn-green" onclick="ciAnswer('good')">
+    <span style="font-size:26px">😊</span> ALL GOOD!
+  </button>
+
+  <div class="ci-next" id="ciNext">Next check in 30 minutes</div>
 </div>
 
 <!-- ═══ ALERT OVERLAY ═══ -->
@@ -860,7 +923,107 @@
     }
   }
 
+  /* ──────── AUDIO + 30-MIN CHECK-IN ──────── */
+  let audioCtx      = null;
+  let checkCount    = 0;
+  let checkTimer    = null;
+  const CHECK_MS    = 30 * 60 * 1000; // 30 minutes
+  const SNOOZE_MS   = 10 * 60 * 1000; // 10-min snooze for "maybe"
+
+  /* Unlock audio on first touch — browsers block autoplay until user interacts */
+  function unlockAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  }
+  document.addEventListener('touchstart', unlockAudio, { once: false, passive: true });
+  document.addEventListener('click',      unlockAudio, { once: false, passive: true });
+
+  function playBeep() {
+    unlockAudio();
+    if (!audioCtx) return;
+    /* Three rising beeps — friendly alarm tone */
+    const notes = [523, 659, 784]; // C5 E5 G5
+    notes.forEach((freq, i) => {
+      const osc  = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'square';
+      osc.frequency.value = freq;
+      const t = audioCtx.currentTime + i * 0.22;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.28, t + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+      osc.start(t);
+      osc.stop(t + 0.22);
+    });
+    /* Repeat the beep sequence twice for emphasis */
+    setTimeout(() => {
+      if (!audioCtx) return;
+      notes.forEach((freq, i) => {
+        const osc  = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'square';
+        osc.frequency.value = freq;
+        const t = audioCtx.currentTime + i * 0.22;
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(0.28, t + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+        osc.start(t);
+        osc.stop(t + 0.22);
+      });
+    }, 800);
+  }
+
+  function scheduleCheck(ms = CHECK_MS) {
+    if (checkTimer) clearTimeout(checkTimer);
+    checkTimer = setTimeout(fireCheck, ms);
+  }
+
+  function fireCheck() {
+    checkCount++;
+    document.getElementById('ciCount').textContent = checkCount;
+    document.getElementById('ciNext').textContent  = 'Next check in 30 minutes';
+    document.getElementById('checkIn').classList.add('show');
+    playBeep();
+    /* Also fire a Web Notification if permitted (works when tab is backgrounded on Android) */
+    if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+      new Notification('⏰ Poop Check Time!', {
+        body: "How is Jaxon's tummy feeling right now?",
+        icon: 'https://dacameragirl.github.io/Jaxons_Potty_Time/favicon.ico',
+        requireInteraction: true
+      });
+    }
+  }
+
+  function ciAnswer(ans) {
+    document.getElementById('checkIn').classList.remove('show');
+    if (ans === 'need') {
+      showScreen('go');
+      scheduleCheck();
+    } else if (ans === 'maybe') {
+      /* Snooze 10 minutes and remind again */
+      document.getElementById('ciNext').textContent = 'Checking again in 10 minutes!';
+      scheduleCheck(SNOOZE_MS);
+    } else {
+      /* All good — back to normal 30-min cycle */
+      scheduleCheck();
+    }
+  }
+
+  function requestNotifPermission() {
+    if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }
+
   init();
+  scheduleCheck();          // start the 30-min cycle
+  requestNotifPermission(); // ask once, quietly
 </script>
 </body>
 </html>
